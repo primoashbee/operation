@@ -1,0 +1,1 @@
+<div id="copyright text-right">© Copyright Lead with Integrity and Good Governance in Helping Communities for Holistic Transformation(LIGHT) Microfinance, Inc.</div>
