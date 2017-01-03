@@ -20,13 +20,15 @@ class CreateClusterMigration extends Migration
             $table->string('region')->nullable();
             $table->string('pa_lastname')->nullable();
             $table->string('pa_firstname')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
         
         Schema::create('cluster_members', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('cluster_id')->unsigned();
-            $table->integer('client_id')->unsigned();
+            $table->integer('cluster_id')->unsigned()->nullable();
+            $table->integer('client_id')->unsigned()->nullable();
+            $table->softDeletes();
             $table->timestamps();
             //
         });

@@ -238,7 +238,7 @@
                         <li>
                           
                         </li>
-                        <li>
+                        <li class="{{str_contains(url()->current(),'Clients')==true ? 'active' : ''}}">
                             <a href="#"><i class="fa fa-user "></i> &nbsp;Clients<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -250,7 +250,7 @@
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                         <li>
+                         <li class="{{str_contains(url()->current(),'Cluster')==true ? 'active' : ''}}">
                             <a href="#"><i class="fa fa-users"></i> Cluster<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -262,30 +262,23 @@
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>                      
-                        <li>
-                            <a href="/Cluster/Create"><i class="fa fa-edit fa-fw"></i> Create Cluster</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
+                        
+                        <li class="{{str_contains(url()->current(),'Loans')==true ? 'active' : ''}}">
+                            <a href="#"><i class="fa fa-money"></i> Loans<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="panels-wells.html">Panels and Wells</a>
+                                    <a href="/Loans/Application">Application</a>
                                 </li>
                                 <li>
-                                    <a href="buttons.html">Buttons</a>
+                                    <a href="/Loans/Applied">List of Applied</a>
                                 </li>
                                 <li>
-                                    <a href="notifications.html">Notifications</a>
+                                    <a href="/Loans/Disbursement">Disbursement</a>
                                 </li>
                                 <li>
-                                    <a href="typography.html">Typography</a>
+                                    <a href="/Loans/Collection">Collection</a>
                                 </li>
-                                <li>
-                                    <a href="icons.html"> Icons</a>
-                                </li>
-                                <li>
-                                    <a href="grid.html">Grid</a>
-                                </li>
+ 
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>

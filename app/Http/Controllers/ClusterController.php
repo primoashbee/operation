@@ -105,9 +105,15 @@ class ClusterController extends Controller
         $cluster_information=$cluster::find($id);
 
         $members= new \App\Cluster_Members;
-        $members = $members::where('cluster_id','=',$id)->paginate(15);
-      
-        return view('pages.view-cluster-members',['members'=>$members,'cluster_info'=>$cluster_information,'id'=>$id]);
+      //  dd($members->listToAdd($id)->all());
+        
+        $cluster_members = $members::where('cluster_id','=',$id)->paginate(15);
+        
+        $clients = new \App\Client_Information;
+        //$clients = $members->listToadd($id)->all();
+        $clients =$clients::all();
+     
+        return view('pages.view-cluster-members',['clients_to_add'=>$clients,'members'=>$cluster_members,'cluster_info'=>$cluster_information,'id'=>$id]);
         
     }
     public function preAddToCluster(){
@@ -119,8 +125,66 @@ class ClusterController extends Controller
     }
     public function postAddToCluster(Request $request,$id){
         $cluster = new \App\Cluster_Members;
+        $data = array();
+        $rules = [
+            'cluster_id'=>'required | exists:clusters,id',
+            'client_id'=>'required | exists:clients,id'
+        ];
+        $msg  = [
+            'cluster_id.exists'=>'Cluster must be existing',
+            'cluster_id.required'=>'Provide cluster',
+            'client_id.required'=>'Select client first'
+            ];
+        $validator = \Validator::make($request->all(),$rules,$msg);
+
+        if($validator->fails()){
+            return redirect('/Cluster/'.$id.'/Members')
+            ->withErrors($validator)
+            ->withInput();
+            
+        }
+        $msg=array();
+        $ctr = 0;
+        foreach($request->client_id as $x){
+            $result = \DB::table('cluster_members')
+            ->where('client_id', '=',$x)
+            ->exists();
+                if($result){
+                    $msg[]=array('id'=>$x);
+                }else{
+                    $cluster::firstOrCreate(['cluster_id'=>$id,'client_id'=>$x]);
+                    $ctr++;
+                }
+
+        }
+            if($ctr==0){
+                $status = array('code'=>0,'MSG'=>'Client(s) selected belongs to another cluster');
+            }else if($ctr==count($x)){
+                $status =array('code'=>1,'MSG'=>'Clients Added to Cluster '.$ctr.'/'.count($request->client_id));
+            }else{
+                $status =array('code'=>1,'MSG'=>'Clients Added to Cluster '.$ctr.'/'.count($request->client_id));
+            }
+            return redirect('/Cluster/'.$id.'/Members')->with('status',$status);
+        
+        
     
         
         
     }
+    public function removeToCluster($cluster_id,$client_id){
+        
+        $clusters = new \App\Cluster_Members;
+        $delete_id = $clusters->where('cluster_id','=',$cluster_id)->where('client_id','=',$client_id)->get();
+        $delete_id = $delete_id->first()->id;
+        $member = $clusters::find($delete_id);
+        //dd($member);
+        if($member->delete()){
+            $status = array('code'=>1,'MSG'=>'Client Removed From Cluster');
+        }else{
+            $status = array('code'=>0,'MSG'=>'Something went wrong');
+       
+        }
+        return back()->with('status',$status);
+    }
 }
+

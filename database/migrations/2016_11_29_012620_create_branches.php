@@ -18,6 +18,7 @@ class CreateBranches extends Migration
             $table->increments('id');
             $table->string('operation')->nullable();
             $table->string('name')->nullable();
+            $table->softDeletes();
             $table->timestamps();
             //
         });

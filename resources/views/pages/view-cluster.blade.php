@@ -3,10 +3,11 @@
 
     <div style="margin-top:60px" class="clearfix"></div>
     <h1>List of All Clusters</h1>
+    
         <h3>Displaying <b><i>{{$information->count().'/'.($information->total())}} </i></b>Clusters</h3>
-        <form action ="\Cluster" method="post">
+        <form action ="\Cluster" method="get">
             <div class="col-lg-12 ">
-            {{csrf_field()}}
+           
                 <div class="form-group has-feedback">
                     <label for="search" class="sr-only">Search</label>
                     <input type="text" class="form-control" name="search" id="search" placeholder="search">
@@ -21,15 +22,22 @@
     <th>Branch</th>
     <th>Code</th>
     <th>Loan Officer</th>
+    <th>Total Loan</th>
+    <th>Status</th>
     <th>Action</th>
     </thead>
     <tbody>
+        <!--Cluster Information -->    
         @foreach($information as $x)
+            
             <tr>
+        
             <td>{{$x->branch()->first()->name}}</td>
             <td>{{$x->code}}</td>
             
             <td>{{$x->pa_lastname.' '.$x->pa_firstname.' '.$x->pa_middlename}}</td>
+            <td>{{total_cluster_loan($x->id)}}</td>
+            <td><span class="label label-{{total_cluster_loan($x->id)==0 ? 'warning ': 'success'}}">{{total_cluster_loan($x->id)==0 ? 'Loan Application ': 'For Disbursement'}}</span></td>
             <td><a href="/Cluster/Update/{{$x->id}}"><button class="btn btn-sm btn-default">Update Cluster</button></a> <a href="/Cluster/{{$x->id}}/Members"><button class="btn btn-sm btn-default">Members Management</button></a></td>
             </tr>
         @endforeach

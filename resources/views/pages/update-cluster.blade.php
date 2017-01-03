@@ -23,11 +23,11 @@
             </ul>
         </div>
     @endif
-        @if (session('status'))
-            <div class="alert alert-success">
-                <h1> {{ session('status') }} </h1>
-            </div>
-        @endif
+    @if (session('status'))
+        <div class="alert alert-success">
+            <h1> {{ session('status') }} </h1>
+        </div>
+    @endif
     
         {{ csrf_field() }}
         <div class="row">

@@ -35,6 +35,7 @@ class CreateClientsInfoTable extends Migration
             $table->string('sex')->nullable();
             $table->string('education')->nullable();
             $table->string('house_type')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
         //for household composition with their source of income

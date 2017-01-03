@@ -1,0 +1,43 @@
+.modal-wide .modal-dialog {
+  width: 80%; /* or whatever you wish */
+}
+
+
+.modal2 {
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) { 
+  .modal2:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog2 {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+
+.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px; /* Adjusts for spacing */
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
