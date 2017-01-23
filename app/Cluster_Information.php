@@ -15,4 +15,8 @@ class Cluster_Information extends Model
     public function members(){
         return $this->hasMany('App\Cluster_Members','cluster_id');
     }
+    
+    public function totalMembers($id){
+        return total_cluster_members($id);
+    }
 }

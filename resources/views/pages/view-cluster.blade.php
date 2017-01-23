@@ -26,7 +26,7 @@
     <th>Status</th>
     <th>Action</th>
     </thead>
-    <tbody>
+    <tbody> 
         <!--Cluster Information -->    
         @foreach($information as $x)
             
@@ -37,7 +37,7 @@
             
             <td>{{$x->pa_lastname.' '.$x->pa_firstname.' '.$x->pa_middlename}}</td>
             <td>{{total_cluster_loan($x->id)}}</td>
-            <td><span class="label label-{{total_cluster_loan($x->id)==0 ? 'warning ': 'success'}}">{{total_cluster_loan($x->id)==0 ? 'Loan Application ': 'For Disbursement'}}</span></td>
+            <td><button class="btn label label-{{total_cluster_loan($x->id)==0 ? 'warning ': 'success'}}"> {{total_cluster_loan($x->id)==0 ? 'For Loan Application ': 'For Disbursement'}} </button> <span class="label label-{{total_cluster_loan($x->id)==0 ? 'danger ': 'success'}}"></span></td>
             <td><a href="/Cluster/Update/{{$x->id}}"><button class="btn btn-sm btn-default">Update Cluster</button></a> <a href="/Cluster/{{$x->id}}/Members"><button class="btn btn-sm btn-default">Members Management</button></a></td>
             </tr>
         @endforeach

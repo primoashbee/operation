@@ -23,7 +23,8 @@
             "App\\": "app/"
         },
         "files": [
-            "app/helpers.php" 
+            "app/helpers.php",
+            "app/library/Amortization.php"
          ]
     },
     "autoload-dev": {

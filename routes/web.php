@@ -19,6 +19,9 @@ Route::get('/Clients','ClientController@index');
 Route::get('/Clients/Create','ClientController@preCreateClient');
 Route::post('/Clients/Create','ClientController@postCreateClient');
 
+Route::get('/Clients/Credit/{id}','CreditController@preCredit');
+Route::post('/Clients/Credit/{id}','CreditController@postCredit');
+
 Route::get('/Clients/Update/{id}','ClientController@getInfoById');
 Route::patch('/Clients/Update/{id}','ClientController@updateClient');
 
@@ -38,6 +41,15 @@ Route::get('Cluster/{cluster_id}/Members/Remove/{client_id}','ClusterController@
 
 Route::get('/Loans/Application', 'LoanController@index');
 Route::get('/Loans/Applied', 'LoanController@appliedLoans');
+Route::get('/Loans/Applied/{id}', 'LoanController@appliedLoanInfo');
+
+
+
+Route::get('/Loans/Disbursement/{id}','DisbursementController@preDisbursement');
+Route::post('/Loans/Disbursement/{id}','DisbursementController@postDisbursement');
+Route::get('/Loans/Collection','CollectionController@index');
+Route::get('/Loans/Collection/{id}','CollectionController@getCollectionValues');
+Route::get('/Loans/Sample/{amt}','CollectionController@sample');
 
 //Route::get('/Loans/Application', 'LoanController@index');
 
@@ -45,6 +57,8 @@ Route::get('/Loans/Applied', 'LoanController@appliedLoans');
 
 //Api
 Route::get('/Api/Loans/Analysis', 'LoanController@getAnalysisById');
+Route::get('/Api/Amortization', 'LoanController@getAnalysisById');
 Route::get('/Api/Loans/Information/{id}', 'LoanController@getLoanById');
 Route::get('/Api/Loans/CheckCoMaker', 'LoanController@checkCoMaker');
 Route::post('/Api/Loans/Analysis/{id}', 'LoanController@createLoan');
+
