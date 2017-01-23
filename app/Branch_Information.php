@@ -12,5 +12,4 @@ class Branch_Information extends Model
     public function cluster(){
         return $this->hasMany('App\Cluster_Information','branch_id');
     }
-  
 }

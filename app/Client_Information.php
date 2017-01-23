@@ -27,7 +27,11 @@ class Client_Information extends Model
     public function cluster(){
         return $this->hasOne('App\Cluster_Members','client_id');
     }
-    public function loans(){
-        return $this->hasMany('App\Loans','client_id','id');
+    public function cashflow(){
+        return $this->hasOne('App\Cashflow_Analysis','client_id');
     }
+    public function loanApplication(){
+        return $this->hasOne('App\Loan_Applications','client_id');
+    }
+   
 }

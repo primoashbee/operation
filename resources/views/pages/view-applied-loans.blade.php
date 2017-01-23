@@ -2,32 +2,16 @@
 @section('content')
 
     <div style="margin-top:30px"></div>
-
+    
 
     <div id="step-1">
       
         <div class="row">
             <div class="col-lg-12">
-              
-                
-                <h1 class="page-header"> List of All Clients</h1>
-                @if (session('status'))
-                    <div class="{{ session('status')['code'] == 1 ? 'alert alert-success' :'alert alert-danger'}}">
-                        <h1> {{ session('status')['msg'] }} </h1>
-                    </div>
-                @endif
-                @if (count($errors) > 0)
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <h2>Total Clusters: <b>{{$clusters->total()}}</b></h2>
+                <h1 class="page-header"> List of All Loans</h1>
+                <h2>Total Clients: <b>{{$list->total()}}</b></h2>
                 <div class="row">
-                <form action="{{url()->current()}}" method="get">
+                <form action="/Loans/Applied" method="get">
                     
                     <div class="row">
                         <div class="col-md-12 ">
@@ -47,54 +31,72 @@
             
             <!-- /.col-lg-12 -->
         </div>
-        
         <table class="table table-striped">
             <thead>
-                <th>Cluster Code</th>
-                <th>Members</th>
-                <th>Paid</th>
+                <th>Name</th>
+                <th>Branch</th>
+                <th>Cluster</th>
+                <th>Loan Type</th>
                 <th>Loan Amount</th>
-               
-                <th>Loan Officer</th>
-                
+                <th>Status</th>
+                <th>Released</th>
                 <th>Action</th>
             </thead>
             <tbody>
            
-                @foreach($clusters as $x)
+                @foreach($list as $x)
                     <tr>
-                        <td>{{$x->clusterInfo->code}}</td>
-                        <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
-                        <td><b>{{money_format(0)}}</b></td>
-                        <td><b>{{money_format($x->loan_amount)}}</b></td>
-                        <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>
-                        <td><a href="{{url()->current().'/'.$x->id}}"><button type = "button"     class="btn btn-default btn-sm">Check Composition</button></a></td>
-                    </tr>
+                        <td>{{$x->clientInfo()->first()->firstname.' '.$x->clientInfo()->first()->lastname}}</td>
+                        <td>{{$x->clientInfo()->first()->branch()->first()->name}}</td>
+                        <td>{{$x->clientInfo()->first()->cluster()->first()->clusterInformation()->first()->code}}</td>
+                        <td>{{$x->product()->first()->name}}</td>
+                        <td>{{$x->loan_amount}}</td>
+                        
+                        <td><span class="label {{$x->status == 'ON GOING' ? 'label-success' : 'label-primary'}}">{{$x->status}}</span></td>
+                        <td>TRUE</td>
+                        <td><button type="button" class="btn btn-sm btn-default view-loan" loan_id = "{{$x->id}}"><i class="fa fa-eye" aria-hidden="true"></i></button></td>
+                     </tr>
                 @endforeach
             </tbody>
         </table>  
-        {{$clusters->links()}}
+        {{$list->links()}}
     </div>
-   <!-- Modal -->
-    
+      <div id="mdlLoanInfo" class="modal fade modal-wide" role="dialog" style="z-index:1400">
+            <div class="modal-dialog">
 
-<div id="frmAlert" class="modal fade" role="dialog" style="z-index: 1800;">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-  
-        <div class="alert alert-danger">
-            <strong>Loan Error! </strong> Loan Applied is higher than the Credit Limit
+                <!-- Modal content-->
+                <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title">Loan Application for: <b><span id="lblName"></span></b></h2>
+                </div>
+                <div class="modal-body">
+                  
+                    <h3>Loan Amount : 16000 </h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" id="btnCompute"> Compute </button>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                </div>
+
+            </div>
         </div>
-      
-  </div>
-</div>
-
-
-
-
 @stop
 @section('page-script')
 <script>
-
+$('.view-loan').click(function(){
+    var id = $(this).attr('loan_id')
+    $.ajax({
+        url:'/Api/Loans/Information/'+id,
+        type:'GET',
+        data:{},
+        success:function(data){
+            console.log(data.business_net_disposable_income )
+        }
+    })
+    $('#mdlLoanInfo').modal('show')
+})
 </script>
 @stop

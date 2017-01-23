@@ -44,13 +44,10 @@
                 @foreach($clients as $x)
                     <tr>
                         <td>{{$x->lastname.', '.$x->firstname.', '.$x->middlename}}</td>
-                        <td>{{$x->branch()->first()==null ? 'Branch Code Error' : $x->branch()->first()->name}}</td>    
+                        <td>{{$x->branch()->first()->name}}</td>
                         <td>{{$x->cluster()->first()==null ? 'None' : $x->cluster()->first()->clusterInformation->code }}</td>
                         <td>{{$x->mobile_number}}</td>
-                        <td>
-                        <a href="\Clients\Update\{{$x->id}}"><button class="btn btn-sm btn-default">Update Info</button></a>
-                        <a href="\Clients\Credit\{{$x->id}}"><button class="btn btn-sm btn-default">Credit Limit</button></a> 
-                        <button class="btn btn-sm btn-default">Delete</button>
+                        <td><a href="\Clients\Update\{{$x->id}}"><button class="btn btn-sm btn-default">Update Info</button></a> <button class="btn btn-sm btn-default">Delete</button>
                     </tr>
                 @endforeach
             </tbody>

@@ -23,7 +23,7 @@
     @endif
        
         <h4> Loan Officer: <b>{{$cluster_info->pa_lastname.', '.$cluster_info->pa_firstname}}</b></h4>
-     
+       <?php // <h4>Displaying <b><i>{{ $members->count().'/'. $members->total()  }} </i></b>Clusters</h4> ?>
         <form action ="" method="post">
             <div class="col-lg-12 ">
                 {{csrf_field()}}

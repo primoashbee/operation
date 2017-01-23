@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Loans;
-use Carbon\Carbon;
+use App\Loan_Applications;
 class LoanController extends Controller
 {
     public function index(){
 
-        $all = new \App\Cluster_Information;
-        $clusters = $all::paginate(15);
+        $all = new \App\client_Information;
+        $clients = $all::paginate(15);
         $products = new \App\Products;
         $product = $products::all();
 
-        return view('pages.apply-loan',['clusters'=>$clusters,'products'=>$product]);
+        return view('pages.apply-loan',['clients'=>$clients,'list'=>$clients,'products'=>$product]);
     }
     public function getAnalysisById(Request $request){
         $client_id = \Request('id'); 
@@ -149,22 +148,14 @@ class LoanController extends Controller
         dd($member);
     }
     public function appliedLoans(){
-        $list = new \App\Disbursement_Information;
-        $clusters = $list::paginate(15); 
-
-        return view('pages.view-applied-loans',['clusters'=>$clusters]);
-
+        $list =  Loan_Applications::paginate(15);
+    
+         return view('pages.view-applied-loans',['list'=>$list]);
+    }
+    public function getLoanById($id){
+        $loan = Loan_Applications::find($id);
+        
+        return response()->json($loan);
         
     }
-    public function appliedLoanInfo($id){
-        $loans = new \App\Disbursement_Information;
-        $loans = $loans::find($id);        
-        foreach($loans->loans()->get() as $x){
-            echo $x->loan_amount;
-        }
-        
-        return view('pages.view-cluster-member-loans',['loans'=>$loans]);
-
-    }
-   
 }
