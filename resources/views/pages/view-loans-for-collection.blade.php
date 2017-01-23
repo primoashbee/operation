@@ -25,7 +25,7 @@
                         </ul>
                     </div>
                 @endif
-                <h2>Total Clusters: <b>{{$clusters->total()}}</b></h2>
+                <h2>Total Clusters: <b>{{$clusters->count()}}</b></h2>
                 <div class="row">
                 <form action="{{url()->current()}}" method="get">
                     
@@ -52,6 +52,8 @@
             <thead>
                 <th>Cluster Code</th>
                 <th>Members</th>
+                <th>Last Collection</th>
+                <th>Next Collection</th>
                 <th>Paid</th>
                 <th>Loan Amount</th>
                
@@ -65,15 +67,16 @@
                     <tr>
                         <td>{{$x->clusterInfo->code}}</td>
                         <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
+                        <td>01/13/2017</td>
+                        <td>01/20/2017</td>
                         <td><b>{{money_format(0)}}</b></td>
                         <td><b>{{money_format($x->loan_amount)}}</b></td>
                         <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>
-                        <td><a href="{{url()->current().'/'.$x->id}}"><button type = "button"     class="btn btn-default btn-sm">Check Composition</button></a></td>
+                        <td><a href="{{url()->current().'/'.$x->id}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>
                     </tr>
                 @endforeach
             </tbody>
         </table>  
-        {{$clusters->links()}}
     </div>
    <!-- Modal -->
     

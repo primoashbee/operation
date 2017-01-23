@@ -9,8 +9,9 @@
         <div class="row">
             <div class="col-lg-12">
               
-                
-                <h1 class="page-header"> List of All Clients</h1>
+                <form action="/Clients/Credit/{{Route::current()->getParameter('id')}}" method="POST">
+                    {{ csrf_field() }}
+                <h1 class="page-header"> Credit Limit</h1>
                 @if (session('status'))
                     <div class="{{ session('status')['code'] == 1 ? 'alert alert-success' :'alert alert-danger'}}">
                         <h1> {{ session('status')['msg'] }} </h1>
@@ -25,56 +26,79 @@
                         </ul>
                     </div>
                 @endif
-                <h2>Total Clusters: <b>{{$clusters->total()}}</b></h2>
-                <div class="row">
-                <form action="{{url()->current()}}" method="get">
-                    
-                    <div class="row">
-                        <div class="col-md-12 ">
-                          
-                                <div class="form-group has-feedback">
-                                    <label for="search" class="sr-only">Search</label>
-                                    <input type="text" class="form-control" name="search" id="search" placeholder="search">
-                                    <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                        
+                        <div class="col-md-6 col-lg-6">
+                            <div class="form-group">
+                            
+                                <label for="cm1">Co Maker 1 (Cluster Member)</label>
+                                <input type="text"   class="form-control" min="0" name ="cm1" id ="cm1" value="{{$info->coMakerInside()->first()==null ? '' : $info->coMakerInside()->first()->lastname.', '.$info->coMakerInside()->first()->firstname. ',' .$info->coMakerInside()->first()->middlename }}" required>
+                                <input type="hidden"  class="form-control" min="0" name ="co_maker_inside_cluster_id" id ="co_maker_inside_cluster_id" value="{{$info->coMakerInside()->first()==null ? '' : $info->co_maker_inside_cluster_id }}" >
+                                <button  class="btn btn-default btnshow" type="button" mode="cm1" >SHOW</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <div class="form-group">
+                            
+                                <label for="cm2">Co Maker 2 (Non-Cluster Member)</label>
+                                <input type="text"  class="form-control" min="0" name ="cm2" id ="cm2" value="{{$info->coMakerOutside()->first()==null ? '' : $info->coMakerOutside()->first()->lastname.', '.$info->coMakerOutside()->first()->firstname. ',' .$info->coMakerOutside()->first()->middlename }}" required>
+                                <input type="hidden"   class="form-control" min="0" name ="co_maker_outside_cluster_id" id ="co_maker_outside_cluster_id"  value="{{$info->coMakerOutside()->first()==null ? '' : $info->co_maker_outside_cluster_id }}">
+                                <button  class="btn btn-default btnshow" type="button" mode="cm2" >SHOW</button>
+                            </div>
+                        </div>
+
+                
+                 
+                  
+                    <div class="clearfix"></div>
+                        <div id="cashflow_analysis">
+                            <div class="col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="business_net_disposable_income">Business Net Disposable Income </label>
+                                    <input type="number" class="form-control" min="0" name ="business_net_disposable_income" id ="business_net_disposable_income"  value="{{$info->business_net_disposable_income}}" required>
                                 </div>
-                         
+                            </div>
+                            <div class="col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="household_income">Household Income</label>
+                                    <input type="number" class="form-control" min="0" name ="household_income" id ="household_income" value="{{$info->household_income}}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="household_expense">Household Expense </label>
+                                    <input type="number" class="form-control" min="0" name ="household_expense" id ="household_expense" value="{{$info->household_expense}}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="financial_risk_assessment">Financial Risk Assessment</label>
+                                    <input type="number" class="form-control" min="0" name ="financial_risk_assessment" id ="financial_risk_assessment" value="{{$info->financial_risk_assessment}}" required >
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-6">
+                                <div class="form-group">
+                                
+                                    <label for="credit_limit">Credit Limit</label>
+                                    <input type="number"  readonly class="form-control" min="0" name ="credit_limit" id ="credit_limit" value ="{{$info->credit_limit}}" required>
+                                </div>
+                            </div>
+                        
+                    
                         </div>
                     </div>
-                </form>
-                </div>
+                    <div class="clearfix"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" id="btnCompute"> Compute </button>
+                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
             </div>
-            </div>
+        </div>
             
             <!-- /.col-lg-12 -->
-        </div>
-        
-        <table class="table table-striped">
-            <thead>
-                <th>Cluster Code</th>
-                <th>Members</th>
-                <th>Status</th>
-                <th>Loan Officer</th>
-                
-                <th>Action</th>
-            </thead>
-            <tbody>
-           
-                @foreach($clusters as $x)
-                    <tr>
-                        <td>{{$x->code}}</td>
-                        <td>{{$x->totalMembers($x->id) }}</td>
-                        <td><span class="label label-{{cluster_status($x->id)=='active' ? 'active' : 'danger'}}">{{cluster_status($x->id)}}</span></td>
-                        <td>{{$x->pa_firstname.' '.$x->pa_lastname}}</td>
-                        <td><a href="/Loans/Disbursement/{{$x->id}}" ><button class="btn btn-sm btn-success">Apply Loan</button></a>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>  
-        {{$clusters->links()}}
     </div>
-   <!-- Modal -->
     
-
+  
 <div id="frmAlert" class="modal fade" role="dialog" style="z-index: 1800;">
   <div class="modal-dialog">
     <!-- Modal content-->
@@ -87,6 +111,35 @@
 </div>
 
 
+<div id="test2" class="modal fade" role="dialog" style="z-index: 1600;">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <div class="modal-body">
+
+        <table class="table table-striped" id="tblListToAdd">
+            <thead>
+                <th>Name</th>
+                <th>Branch</th>
+                <th>Action</th>
+              
+            </thead>
+            <tbody>
+                @foreach($list as $x)
+                    <tr>
+                        <td>{{$x->lastname.', '.$x->firstname.', '.$x->middlename}}</td>
+                        <td>{{$x->branch()->first()->name}}</td>
+                        <td><button class="btn btn-default comaker1" client_id = "{{$x->id}}" name = "{{$x->lastname.', '.$x->firstname.', '.$x->middlename}}">Pick as Co-Maker</button></td>
+        
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>  
+      </div>      
+    </div>
+  </div>
+</div>
 
 
 @stop
@@ -94,6 +147,7 @@
 <script>
 var tags=[];
 var mode=0;
+/*
     $('.cashflow').click(function(e){
         var id = $(this).attr('client_id');
         $('#frmModal').attr('action','/Api/Loans/Analysis/'+id)
@@ -115,7 +169,7 @@ var mode=0;
         })
         e.preventDefault();
     })
-
+*/
     $('#btnCompute').click(function(e){
         var BNDI = parseInt($('#business_net_disposable_income').val())
         var HI = parseInt($('#household_income').val())
@@ -126,6 +180,7 @@ var mode=0;
         var CL = (BNDI + (HI - HE))
         $('#credit_limit').val(CL);
     })
+/*
     $("#slctPurpose").change(function(){
         if($(this).val()=="Others"){
             $('#divGroup').removeClass('hidden')
@@ -144,10 +199,14 @@ var mode=0;
         $('#purpose').addClass('hidden')
         $('#slctPurpose').show()
     })
+    
+    */
+    
     $(".btnshow").click(function(){
         mode= $(this).attr('mode')
         $('#test2').modal('show')
     })
+    
     $('.comaker1').click(function(){
         var id = $(this).attr('client_id') 
         $.ajax({
@@ -164,6 +223,7 @@ var mode=0;
         $('#tblListToAdd').DataTable();
         
     })
+
     $('.comaker1').click(function(){
         if(mode=="cm1"){
             $('#cm1').val($(this).attr('name'))
@@ -173,9 +233,10 @@ var mode=0;
             $('#co_maker_outside_cluster_id').val($(this).attr('client_id'))
             
         }
-        $('#test2').modal('hide')
-        $('#mdlCashflow').modal('show')
+         $('#test2').modal('hide')
+       
     })
+    /*
 InvalidInputHelper(document.getElementById("loan_amount"), {
   defaultText: "Please enter Loan Amount",
 
@@ -245,6 +306,6 @@ $('#frmModal').submit(function(e){
     }
 })
 
-
+*/
 </script>
 @stop
