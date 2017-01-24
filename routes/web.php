@@ -49,7 +49,7 @@ Route::get('/Loans/Disbursement/{id}','DisbursementController@preDisbursement');
 Route::post('/Loans/Disbursement/{id}','DisbursementController@postDisbursement');
 Route::get('/Loans/Collection','CollectionController@index');
 Route::get('/Loans/Collection/{id}','CollectionController@getCollectionValues');
-Route::get('/Loans/Sample/{amt}','CollectionController@sample');
+
 
 //Route::get('/Loans/Application', 'LoanController@index');
 
@@ -61,4 +61,9 @@ Route::get('/Api/Amortization', 'LoanController@getAnalysisById');
 Route::get('/Api/Loans/Information/{id}', 'LoanController@getLoanById');
 Route::get('/Api/Loans/CheckCoMaker', 'LoanController@checkCoMaker');
 Route::post('/Api/Loans/Analysis/{id}', 'LoanController@createLoan');
+Route::get('/Api/Scheduling/{amt}','CollectionController@createAmortScheduling');
+Route::get('/Api/GetSchedule/{disbursment_id}/{client_id}','CollectionController@retreiveAmortByDisburseAndClientId');
+Route::get('/Api/Date/Amortization/',function(){
+    echo \Request::get('from');
+});
 

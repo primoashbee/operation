@@ -5,10 +5,10 @@
 	@include('includes.head')
 </head>
 <body>
-	<div class="container">
+	<div class="container"  style="padding-top:25px">
 	
 		
-		<div class="well">
+		<div class="jumbotron">
 			
 				@yield('content')
 			
@@ -18,8 +18,6 @@
 	</div>
 
 </body>
-<script>
 	@include('includes.scripts')
 	@yield('page-script')
-</script>
 </html>

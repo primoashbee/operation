@@ -83,13 +83,19 @@
                                     {{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}
                                 </td>
                                 <td>
-                                    <input type="number" min="2000" max="99000" name="loan_amount[{{$x->name->id}}]" class="form-control loan-amount"> 
+                                    <div class="input-group">
+                                        <input type="number" min="2000" max="99000" name="loan_amount[{{$x->name->id}}]" class="form-control loan-amount" data-id="{{$x->name->id}}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-success view-amort" lookup-id="{{$x->name->id}}" type="button">View Amortization</button>
+                                        </span>
+                                        </div>
+                                    </div>
+                                    
                                 </td>
                                 <td style="text-align:center">
                                     <div class="radio">
-                                        <label><input type="checkbox" class="reloan" name="reloan[{{$x->id}}]" p_id = "{{$x->id}} "p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" target-rdb="rdb{{$x->id}}" > Not re-loaning/loaning </label>
+                                        <label><input type="checkbox" class="reloan" name="reloan[{{$x->id}}]" p_id = "{{$x->id}} "p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" target-rdb="rdb{{$x->id}}"> Not re-loaning/loaning </label>
                                         <label  id="rdb{{$x->id}}"><input type="radio" class="rdbPayee" name="payee_id" value="{{$x->id}}" p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" required>Mark As Payee</label>
-                                    <button type="button" class="btn btn-sm btn-default loan-summary"><i class="fa fa-info-circle fa-5" aria-hidden="true"></i></button>
                                     </div>
                                     
                                 </td>
@@ -105,23 +111,7 @@
         {{$clients->links()}}
     </div>
 </form>  
-<div class="modal modal-wide fade" id="mdlDisburseSummary" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Disbursement Summary</h4>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
 
@@ -149,6 +139,10 @@
 var weeks;
 $(function(){
   weeks = {{$weeks_to_pay}}  
+  $('first_collection_date').datepicker({
+      showOtherMonths: true,
+        selectOtherMonths: true,
+  })
 })
 $('.loan-summary').click(function(){
     $('#frmDisburse').submit
@@ -157,10 +151,6 @@ $('.loan-summary').click(function(){
 $('.rdbPayee').click(function(){
     $('#payee_name').val($(this).attr('p_name'))
     $('#payee_id').val($(this).val())
-})
-$('#btnShowSummary').click(function(){
-   
-    $('#mdlDisburseSummary').modal('show')
 })
 $('.reloan').click(function(){
     //get rdbid of clicked checkbox
@@ -179,7 +169,45 @@ $('.reloan').click(function(){
    }
 })
 $('#first_collection_date').change(function(){
-    console.log($(this).toLocaleDateString())
+    console.log($(this).val())
 })
+
+$('.view-amort').click(function(){
+    id = $(this).attr('lookup-id')
+    console.log(id)
+    input = $('[data-id='+ id +']')
+    val = input.val()
+    if(val==""){
+        input.addClass('alert alert-danger')
+        input.removeClass('alert alert-success')
+       
+    }else{
+        input.addClass('alert alert-success')
+        input.removeClass('alert alert-danger') 
+        popuponclick(input.val())  
+    }
+ 
+})
+
+
+
+function popuponclick(value)
+{
+my_window = window.open('http://localhost:8000/Api/Scheduling/'+value,
+  "Schedule","status=1,width=1000px,height=500px");
+
+}
+ $("#first_collection_date").change(function(){
+     var val = $(this).val()
+     $.ajax({
+         url:'/Api/Date/Amortization/',
+         data:{from:val},
+         dataType:'JSON',
+         type:'GET',
+         success:function(data){
+             //console.log(data)
+         }
+     })
+ })
 </script>  
 @stop

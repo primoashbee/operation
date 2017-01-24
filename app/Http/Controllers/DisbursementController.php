@@ -96,6 +96,28 @@ class DisbursementController extends Controller
                     'is_payed'=>false,
                     );
                     $loan_summaries->create($loan_input);
+
+                    $product = new \App\Products;
+                    $product = $product->first();
+                    $table = create_amortization($value,$product->interest_rate,$product->loan_term,$product->weeks_to_pay,$product->weekly_compounding_rate);
+                    $amort = [];
+                    $amortizations = new \App\Amortization;
+                    //
+                    foreach($table->table as $data){
+                        $amort[] = array(
+                            'disbursement_id' => $disbursement_id->id,
+                            'client_id'=>$key,
+                            'week'=>$data->week,
+                            'principal_this_week'=>$data->principal,
+                            'interest_this_week'=>$data->interest,
+                            'principal_with_interest'=>$data->principal + $data->interest,
+                            'principal_balance'=>$data->p_balance,
+                            'interest_balance'=>$data->i_balance,
+                        );
+
+                    }
+                    $amortizations->insert($amort);
+
             
             }
         }
