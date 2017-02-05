@@ -35,6 +35,8 @@ class DisbursementController extends Controller
         $loans = $loans::where('cluster_id','=',$id)->orderBy('created_at','desc');
         $product = new \App\Products;
         $mpl = $product::first();
+        $first_collection_date = $request->first_collection_date;
+       
         if($loans->where('status','=','on-going')->exists()){
             return back()->with('status',['code'=>0,'msg'=>'This cluster has ON GOING transaction']);
         }
@@ -68,7 +70,7 @@ class DisbursementController extends Controller
        
         //dd($input); 
         $disbursement_id=$loans->create($input);
-    
+        
 
         $client_loan = new \App\Loans;
         $loan_input=array();
@@ -99,7 +101,7 @@ class DisbursementController extends Controller
 
                     $product = new \App\Products;
                     $product = $product->first();
-                    $table = create_amortization($value,$product->interest_rate,$product->loan_term,$product->weeks_to_pay,$product->weekly_compounding_rate);
+                    $table = create_amortization($value,$product->interest_rate,$product->loan_term,$product->weeks_to_pay,$product->weekly_compounding_rate,$first_collection_date);
                     $amort = [];
                     $amortizations = new \App\Amortization;
                     //
@@ -113,6 +115,7 @@ class DisbursementController extends Controller
                             'principal_with_interest'=>$data->principal + $data->interest,
                             'principal_balance'=>$data->p_balance,
                             'interest_balance'=>$data->i_balance,
+                            'collection_date'=>$data->collection_date
                         );
 
                     }

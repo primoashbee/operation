@@ -157,11 +157,12 @@ class LoanController extends Controller
         
     }
     public function appliedLoanInfo($id){
+       // $collection_date = \Request::get('collection_date');
+        
         $loans = new \App\Disbursement_Information;
         $loans = $loans::find($id);        
-        foreach($loans->loans()->get() as $x){
-            echo $x->loan_amount;
-        }
+        //$loans = $loans::find($id)->where('collection_date','=',$collection_date)->get();        
+        //dd($loans);   
         
         return view('pages.view-cluster-member-loans',['loans'=>$loans]);
 

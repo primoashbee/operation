@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header"> List of All Clients</h1>
-                <h2>Total Clients: <b>10</b></h2>
+                <h2>Total Clients: <b>{{$due->count() }}</b></h2>
                 <div class="row">
                 <form action="{{ url()->current()}}" method="get">
                     
@@ -28,7 +28,41 @@
                 </div>
             </div>
             </div>
-            
+       
+        @if($due->count()==0)
+            <h1> Wala pong collection ngayong araw </h1>    
+        @endif 
+        @if (null !== (session('data')))
+            <div class="alert alert-danger">
+                <ul>
+                  
+                    @foreach (session('data') as $error)
+                        <li>{{$error->msg}}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        @if (count($errors) > 0)
+            <div class="alert alert-danger">
+                <ul>
+                  
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        
+        
+        <div class="hidden" id="alert-div">
+            <div class="alert alert-danger">
+                <ul>
+                
+                        <li>Invalid File Type (.xlsx only)</li>
+                  
+                </ul>
+            </div>
+        </div>
             <!-- /.col-lg-12 -->
         </div>
         <table class="table table-striped">
@@ -42,65 +76,69 @@
             </thead>
             
             <tbody>
-                <tr>
-                    <td>Ashbee Morgado</td>
-                    <td>{{money_format('50000')}}</td>
-                    <td>{{money_format('2458')}}</td>
-                    <td>{{money_format('0')}}</td>
-                    <td>{{money_format('2458')}}</td>
-                </tr>
-                
-                <tr>
-                    <td>Michael Bomlarda</td>
-                    <td>{{money_format('60000')}}</td>
-                    <td>{{money_format('4320')}}</td>
-                    <td>{{money_format('0')}}</td>
-                    <td>{{money_format('4320')}}</td>
-                </tr>
-                
-                <tr>
-                    <td>Jasmin Conquilla</td>
-                    <td>{{money_format('45000')}}</td>
-                    <td>{{money_format('2230')}}</td>
-                    <td>{{money_format('0')}}</td>
-                    <td>{{money_format('2230')}}</td>
-                </tr>
-                
-                
-                <tr>
-                    <td>Erwin Libunao</td>
-                    <td>{{money_format('70000')}}</td>
-                    <td>{{money_format('4769')}}</td>
-                    <td>{{money_format('0')}}</td>
-                    <td>{{money_format('4769')}}</td>
-                </tr>
-                
-                
-                <tr>
-                    <td>Greggy Canja</td>
-                    <td>{{money_format('75000')}}</td>
-                    <td>{{money_format('4900')}}</td>
-                    <td>{{money_format('0')}}</td>
-                    <td>{{money_format('4900')}}</td>
-                </tr>
-                
+        
+                @foreach($due as $x)
+                    <tr>
+                        <td>{{$x->clientInfo->firstname.' '.$x->clientInfo->lastname}}</td>
+                        <td>{{pesos(individual_total_loan($x->disbursement_id,$x->client_id)->loan_amount) }}</td>
+                        
+                    
+                        <td>{{pesos($x->principal_with_interest)}}</td>
+                        <td>{{pesos($x->past_due)}}</td>
+                        <td>{{pesos($x->principal_this_week + $x->past_due)}}</td>
+                        
+                    </tr>
+                @endforeach
             </tbody>
         </table>  
         <div class="modal-footer">
-           
-            <div class="input-group">
-                <label class="input-group-btn">
-                    <span class="btn btn-primary form-control">
-                        Browse… <input type="file" style="display: none;" multiple="">
-                    </span>
-                    
-                </label>
-                <input type="text" class="form-control" readonly="" style="width:80%">
-                <input type="submit" class="btn btn-default" >
-               
+            <form action ="{{url()->current()}}" method ="POST" enctype="multipart/form-data" id="frmUpload">
+                {{csrf_field()}}
+                <div class="input-group">
+                    <label class="input-group-btn">
+                        <span class="btn btn-primary form-control">
+                            Browse… <input type="file" name = "fileUpload" id ="fileUpload" style="display: none;" value ="{{isset($input) ? $input->getRealPath() : ''}}">
+                        </span>
+                        
+                    </label>
+                    <input type="text" class="form-control" readonly="" style="width:80%" value="{{isset($input) ? $input->getClientOriginalName() : '' }}">
+                    <button type="submit" class="btn btn-default"  id="btnUpload" > Upload </button>
+                
 
+                </div>
+            </form>
+        </div>
+        
+        @if(isset($readFile))
+        
+        <div class="read-values">
+            <h1>Review Payment <button type ="submit" class="btn btn-success"/ > <i class="fa fa-floppy-o" aria-hidden="true"></i> Save Payment </button></h1>
+            <table class="table table-condensed">
+                <thead>
+                    <th>Client Name</td>
+                    <th>Amount Due</td>
+                    <th>Amount Paid</td>
+                    <th>This Week Balance</td>
+                    <th>CBU</td>
+                </thead>
+                <tbody>
+                @foreach($readFile->collection as $k => $v)
+                
+                    <tr>
+                        <td>{{$v->client_name}}</td>
+                        <td>{{pesos($v->principal_with_interest)}}</td>
+                        <td>{{pesos($v->amount_paid)}}</td>
+                        <td>{{pesos($v->this_week_balance)}}</td>
+                        <td>{{pesos($v->cbu)}}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+            <div class="modal-footer">
+                <a href="{{url()->current()}}/Save"><button type ="submit" class="btn btn-success"/ > <i class="fa fa-floppy-o" aria-hidden="true"></i> Save Payment </button></a>
             </div>
         </div>
+        @endif
        
     </div>
    
@@ -132,7 +170,37 @@ $(function() {
 
       });
   });
-  
+  /*
+  $('#btnUpload').click(function(){
+     file = $('#fileUpload').val()
+     ext = file.substr(file.lastIndexOf('.')+1)
+     if(ext=='xlsx'){
+       $('#alert-div').addClass('hidden')   
+       formData = $('#frmUpload').serialize()
+        $.ajax({
+            type: 'get',
+            url: '/Ajax/UploadCollection/',
+            data: formData,
+            dataType: 'json',
+            success: function(data){
+                // success logic
+            },
+            error: function(data){
+                var errors = data.responseJSON;
+                console.log(errors);
+                // Render the errors with js ...
+        }
+        })
+     }else{
+        
+        $('#alert-div').removeClass('hidden')
+     }
+     console.log(ext)
+         
+     
+  })
+  */
 });
+
 </script>
 @stop

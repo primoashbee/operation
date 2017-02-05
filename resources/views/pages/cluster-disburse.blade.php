@@ -198,14 +198,22 @@ my_window = window.open('http://localhost:8000/Api/Scheduling/'+value,
 
 }
  $("#first_collection_date").change(function(){
-     var val = $(this).val()
+     var input = $(this)
+     var val = input.val()
      $.ajax({
          url:'/Api/Date/Amortization/',
          data:{from:val},
          dataType:'JSON',
          type:'GET',
          success:function(data){
-             //console.log(data)
+             if(data.code==1){
+                 $('#last_collection_date').val(data.msg)
+                   input.removeClass('alert-danger')
+                
+             }else{
+
+                 input.addClass('alert-danger')
+             }
          }
      })
  })

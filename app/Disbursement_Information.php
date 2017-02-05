@@ -44,4 +44,26 @@ class Disbursement_Information extends Model
         return $this->where('status','=','on-going')->get();    
         
     }
+    public function getCollectionDates($disbursement_id){
+        $amort = new \App\Amortization;
+        
+        $amort = $amort::distinct()->where('disbursement_id','=',$disbursement_id)->whereNotNull('collection_date')->orderBy('collection_date','asc')->get(['collection_date']);
+        return $amort;
+    }
+    public function getCollectionThisDay(){
+        $now = \Carbon\Carbon::now();
+        $today = $now->year .'-'.$now->month.'-'.$now->day;
+       
+        return $this->hasMany('App\Amortization','disbursement_id')->where('collection_date','=',$today)->get();
+    }
+    public function getCollectionThisDaySet($today){
+        // $now = \Carbon\Carbon::now();
+        // $today = $now->year .'-'.$now->month.'-'.$now->day;
+     
+        return $this->hasMany('App\Amortization','disbursement_id')->where('collection_date','=',$today)->get();
+    }
+    public function getLoanSummary($client_id){
+        //return $this->hasOne('App\Loans','disbursement_id')->where('disbursement_id','=',$disbursement_id)->where('client_id','=',$client_id);
+        return $this->hasOne('App\Loans','disbursement_id')->where('client_id','=',$client_id)->get();
+    }
 }

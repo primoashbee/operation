@@ -6,7 +6,7 @@
             <div class="col-lg-12">
               
                 
-                <h1 class="page-header"> List of All Clients</h1>
+                
                 @if (session('status'))
                     <div class="{{ session('status')['code'] == 1 ? 'alert alert-success' :'alert alert-danger'}}">
                         <h1> {{ session('status')['msg'] }} </h1>
@@ -22,7 +22,6 @@
                     </div>
                 @endif
               
-                <h2>Total Clients: <b>{{$loans->loans->count()}}</b></h2>
               
                
                 
@@ -32,7 +31,7 @@
             <!-- /.col-lg-12 -->
         </div>
         <div class="well clearfix">
-                
+            
             <h2 class="text-center"><b>Disbursement Information</b></h2>
             <div class="col-lg-4 col-md-4">
                    <h4>CV #: <b>{{$loans->cv_number}}</b></h4>
@@ -57,7 +56,7 @@
             </div>
             
         </div>
-        <div class="col-lg-6 col-md-6">
+         <div class="col-lg-6 col-md-6">
             <form action="{{url()->current()}}" method="get">
                         
                         <div class="row">
@@ -74,7 +73,7 @@
             </form>
         </div>
         <div class="col-lg-6 col-md-6">
-            <form action = "{{url()->current().'\Schedule'}}" method="GET" id="form_filter">
+            <form action = "{{url()->current()}}" method="GET" id="form_filter">
                 
                 <select class="form-control" name="collection_date"  id="collection_date" >
                         <option value=""> - </option>
@@ -84,27 +83,40 @@
                 </select>
             </form>
         </div>
-                                                   
+        <div class="clearfix"></div>
+        <h4> Collection for the date: <b>{{\Request::get("collection_date")}}</b> Download File <a class="logo" href="/Downloads/Collection/CCRDownload/{{$disbursement_id.'/'.\Request::get('collection_date')}}"><i class="fa fa-download" aria-hidden="true"></i> </a> </h4>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active {{$projected->css_class}}" role="progressbar"
+            aria-valuenow="{{$projected->p_percentage }}" aria-valuemin="0" aria-valuemax="100" style="width:{{$projected->p_percentage }}%">   
+            <b>{{$projected->p_percentage}}%</b>
+            </div>
+        </div>                                                   
         <table class="table table-striped">
             <thead>
                 <th>Name</th>
-                <th>Loan Amount</th>
-                
-                <th>Action</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Past Due</th>
+            
+                <th>Cashflow</th>
+                <th>Principal Balance</th>
+                <th>Interest Balance</th>
             </thead>
-            <tbody>
-                @foreach($loans->loans()->get() as $x)
+           
+                @foreach($data as $x)
                     <tr>
-                        <td>{{$x->clientInfo->firstname.' '.$x->clientInfo->lastname}}</td>
-                        <td>{{money_format($x->loan_amount)}}</td>
-                        <td><button class="btn btn-sm btn-default view-amort" type="button" lookup-id="{{$x->loan_amount}}">View Amortization Schedule </button></td>
+                        <td>{{$x->clientInfo->firstname. ' '.$x->clientInfo->lastname}}</td>
+                        <td>{{pesos($x->principal_this_week)}}</td>
+                        <td>{{pesos($x->interest_this_week)}}</td>
+                        <td class="alert alert-danger">{{pesos(0)}}</td>
+                        <td>{{pesos($x->principal_with_interest)}}</td>
+                        <td>{{pesos($x->principal_balance)}}</td>
+                        <td>{{pesos($x->interest_balance)}}</td>
                     </tr>
                 @endforeach
-                <tr>
-                    <td></td>
-                    <td>{{money_format($loans->loan_amount)}}</td>
-                    <td></td>
-                </tr>
+
+            <tbody>
+              
             </tbody>
         </table>  
     </div>
@@ -131,19 +143,5 @@
 $("#collection_date").change(function(){
     $('#form_filter').submit();
 })
-
-$('.view-amort').click(function(){
-    id = $(this).attr('lookup-id')
-    popuponclick(id); 
-})
-
-
-
-function popuponclick(value)
-{
-my_window = window.open('http://localhost:8000/Api/Scheduling/'+value,
-  "Schedule","status=1,width=1000px,height=500px");
-
-}
 </script>
 @stop

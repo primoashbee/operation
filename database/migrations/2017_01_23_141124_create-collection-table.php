@@ -29,6 +29,8 @@ class CreateCollectionTable extends Migration
      */
     public function down()
     {
-        //
+        
+        Schema::drop('collections');
+        
     }
 }

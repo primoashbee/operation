@@ -7,7 +7,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="URL::('self')">{{ env('app_name') }}</a>
+                <a class="navbar-brand" href="{{url()->current()}}">{{ env('app_name') }}</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -272,9 +272,7 @@
                                 <li>
                                     <a href="/Loans/Applied">List of Applied</a>
                                 </li>
-                                <li>
-                                    <a href="/Loans/Disbursement">Disbursement</a>
-                                </li>
+                               
                                 <li>
                                     <a href="/Loans/Collection">Collection</a>
                                 </li>

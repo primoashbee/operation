@@ -23,6 +23,7 @@ class CreateAmortization extends Migration
             $table->integer('principal_with_interest')->unsigned()->nullable();
             $table->integer('principal_balance')->unsigned()->nullable();
             $table->integer('interest_balance')->unsigned()->nullable();
+            $table->string('collection_date')->nullable();
             
         });
     }
@@ -34,6 +35,8 @@ class CreateAmortization extends Migration
      */
     public function down()
     {
-        //
+        
+        Schema::drop('weekly_amortization');
+        
     }
 }

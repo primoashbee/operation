@@ -4,8 +4,8 @@
 	<title>LIGHT MFI - @yield('title')</title>
 	@include('includes.head')
 </head>
-<body>
-	<div id="wrapper">
+<body style="margin-top:30px">
+	<div id="wrapper" >	
 		@include('includes.header')
 		
 		<div id="page-wrapper">

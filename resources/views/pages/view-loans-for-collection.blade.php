@@ -72,7 +72,7 @@
                         <td><b>{{money_format(0)}}</b></td>
                         <td><b>{{money_format($x->loan_amount)}}</b></td>
                         <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>
-                        <td><a href="{{url()->current().'/'.$x->id}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>
+                        <td><a href="{{url()->current().'/'.$x->id.'/'.$today}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>
                     </tr>
                 @endforeach
             </tbody>

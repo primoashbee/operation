@@ -5,5 +5,6 @@
 <script src="{{asset('/plugins/dataTables/dataTables.min.js') }}"></script>
 <script src="{{asset('/js/sb-admin-2.min.js') }}"></script>
 <script src="{{asset('/js/myjs.js') }}"></script>
+<script src="{{asset('/js/bootstrap-filestyle.min.js') }}"></script>
 
 

@@ -8,7 +8,22 @@ function pesos($string){
 function zero_peso(){
      return "₱ 0.00";
 }
-
+function destroy_session($key){
+    if(\Session::has($key)){
+        \Session::forget($key);
+        return true;
+    }else{
+        return false;
+    }                    
+}
+function session_exists($key){
+     if(\Session::has($key)){
+        
+        return true;
+    }else{
+        return false;
+    }   
+}
 function compute_credit_limit($bndi,$hi,$he){
 
     $credit_limit = $bndi + ($hi -$he);
@@ -39,16 +54,42 @@ function cluster_status($cluster_id){
     $cluster = $clusters::where('cluster_id','=',$cluster_id);
     return 'ACTIVE';
 }
-function create_amortization($amt,$rate,$term,$weeks,$wcr){
+function create_amortization($amt,$rate,$term,$weeks,$wcr,$first_collection_date){
     $class = new \App\MyClass\Loan_Computation;
     $amort = ($term*$rate)*($amt);
-    $class->set($amt,$rate,$term,$weeks,$wcr);
+    $class->set($amt,$rate,$term,$weeks,$wcr,$first_collection_date);
     return $class;
 }
-
 function is_decimal( $val )
 {
     return is_numeric( $val ) && floor( $val ) != $val;
 }
+function is_weekend($date) {
 
+    if(date('l', strtotime($date)) == 'Sunday' || date('l', strtotime($date)) == 'Saturday')  {
+        return true;
+    } else {
+        return false; 
+    }
+
+}
+
+function day_name($date){
+    return date('l', strtotime($date));
+}
+
+function add_seven_days($from){
+    $daystosum = 7;
+    $datesum = date('Y-m-d', strtotime($from.' + '.$daystosum.' days'));
+    $day = date('l', strtotime($from.' + '.$daystosum.' days'));
+    $x = date('W', strtotime($from.' + '.$daystosum.' days'));
+    //return  (object) array('code'=>0,'msg'=>$datesum,'day'=>$day);
+    return  $datesum;
+}
+
+function individual_total_loan($disbursement_id,$client_id){
+    $loans = new \App\Loans;
+    $loans = $loans::where('disbursement_id','=',$disbursement_id)->where('client_id','=',$client_id)->get()->first();
+    return $loans;
+}
 ?>
