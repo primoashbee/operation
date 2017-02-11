@@ -54,6 +54,21 @@
         @endif
         
         
+        @if(\Session::has('failmsg'))
+            <div class="alert alert-danger">
+                <ul>
+                    <li>{{ \Session::get('failmsg')}}                
+                </ul>
+            </div>
+        @endif
+        
+        @if(\Session::has('goodmsg'))
+            <div class="alert alert-success">
+                <ul>
+                    <li>{{\Session::get('goodmsg')}}                
+                </ul>
+            </div>
+        @endif
         <div class="hidden" id="alert-div">
             <div class="alert alert-danger">
                 <ul>
@@ -84,8 +99,9 @@
                         
                     
                         <td>{{pesos($x->principal_with_interest)}}</td>
-                        <td>{{pesos($x->past_due)}}</td>
-                        <td>{{pesos($x->principal_this_week + $x->past_due)}}</td>
+                        
+                        <td class="alert alert-danger">{{$x->pastDue()!=null ? pesos($x->pastDue()->total_amount) : pesos(0) }}</td>
+                        <td>{{$x->pastDue()!=null ? pesos($x->pastDue()->total_amount + $x->principal_with_interest) : pesos($x->principal_with_interest ) }}</td>
                         
                     </tr>
                 @endforeach

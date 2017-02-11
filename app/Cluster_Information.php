@@ -19,4 +19,5 @@ class Cluster_Information extends Model
     public function totalMembers($id){
         return total_cluster_members($id);
     }
+    
 }

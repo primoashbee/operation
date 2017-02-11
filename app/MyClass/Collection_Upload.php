@@ -4,12 +4,14 @@ namespace App\MyClass{
         public $collection;
         public $cluster_code;
         public $collection_date;
+        public $disbursement_id;
         public $amount_paid; //actual
         public $expected_amount; //projected
         public $interest_amount; //actual interset
         public $principal_amount; //actual principal
         public $principal_not_collected; //principal not collected
         public $interest_not_collected; //interest not collected
+        public $uploader_id;
         public $required = [
             'amort_id',
             'amount_paid'
@@ -18,20 +20,40 @@ namespace App\MyClass{
         public $hasErrors=false;
         public $isFullyPaid=true;
         public $past_due_amount;
-        public function get($obj,$sheetname){
-            //dd($obj{0}->getSheetName());
+        public $cbuValues;
 
+        public $interest_due;
+        public $public_due;
+        public $total_due;
+        public function get($obj,$sheetname){
+            
+            //dd($obj{0}->getSheetName());
+            $cbu = new \App\CBU;
+            
+            $cbu->get($obj);
+            
+            $this->cbuValues = $cbu->cbuValues();
+            
+            //dd($cbu->get($obj));
             $this->collection = $obj;
-            $this->cluster_code = $sheetname;
+            
+            $this->disbursement_id = $sheetname;
+            $this->uploader_id = 1;
+            
             $this->computeData($obj);
             $this->validateData($obj);
-            
+          
             
         }
         public function validateData($obj){
             $errorBag = $this->errorBag;
             $currentRow = 2; //because index row of excel is 1; so 1+1 =2 to get first row with record
+           
+            $collections = new \App\Payment_Summary;
+            $settings = new \App\MyClass\Settings;
+        
             foreach($obj as $row){
+                //dd($row);
                 
                 if($row->amort_id == '' || $row->amort_id === null){
                     //ammortization id is missing
@@ -48,10 +70,20 @@ namespace App\MyClass{
                 }elseif(!is_numeric($row->amount_paid)){
                     //amount paid is blank
                     $errorBag[] = (object) array('msg'=>'AMOUNT PAID should be numeric for Client: '.$row->client_name.' (See Row: '.$currentRow.' )');  
-                }elseif($row->cbu!==null && $row->cbu < 50){
+                //}elseif(($row->cbu!==null && $row->cbu != 0 ) || $row->cbu < 50){
+                }elseif(($row->cbu!==null && $row->cbu!=0 && $row->cbu < 50)){
+                    
                     //amount paid is blank
                     $errorBag[] = (object) array('msg'=>'CBU has a minimum of '.pesos(50).' for Client: '.$row->client_name.' (See Row: '.$currentRow.' )');
-                }   
+                }elseif($row->cbu===null){
+                    //amount paid is blank
+                    $errorBag[] = (object) array('msg'=>'If there no CBU for this week. Please encode "0" instead for Client: '.$row->client_name.' (See Row: '.$currentRow.' )');
+               /* }elseif($row->collection_date != $settings->date->toDateString()){
+                    $errorBag[] = (object) array('msg'=>'CCR Error to corresponding date. Collection for this cluster is :'.$row->collection_date.' vs today\'s  date is: '.$settings->date->toDateString());
+                */
+                }elseif($collections::where('disbursement_id','=',$this->disbursement_id)->where('collection_date','=',$row->collection_date)->count() > 0){
+                    $errorBag[] = (object) array('msg'=>'Already uploaded collection for this day');
+                }
 
                 $currentRow++;
               
@@ -60,9 +92,10 @@ namespace App\MyClass{
             if(count($this->errorBag)>0){
                 $this->hasErrors =true;
             }
+          
         }
 
-        public function computeData($obj){-
+        public function computeData($obj){
             $count = $obj->count();
             for($x=0; $x<=$count-1;$x++){
                 if($obj{$x}->amount_paid==$obj{$x}->principal_with_interest){
@@ -89,23 +122,81 @@ namespace App\MyClass{
             }
            
             $this->collection = $obj;
+        
         }
         public function save(){
-            
-            $this->collection_date = $this->collection{0}->collection_date;
-            $this->computePayments();
-            $paymentSummaries = array(
-                'cluster_code'=>$this->cluster_code,
-                'collection_date'=>$this->collection_date,
-                'amount_paid'=>$this->amount_paid,
-                'uploader_id'=>1
-            );
-           // dd($paymentSummaries);
-            foreach($this->collection as $key => $value){
-               
-                $paymentSummaries[] = array($key => $value->$key); 
+             
+            \DB::beginTransaction();
+            try{
+                    $this->collection_date = $this->collection{0}->collection_date;
+                    $this->computePayments();
+                    $past_due = new \App\Past_Due;
+                    $past_due->get($this);
+                    $past_due->insert($past_due->insertValues);
+                    $payment_summary = new \App\Payment_Summary;
+                    
+                    $payment_summary->disbursement_id = $this->disbursement_id;
+                    
+                    $payment_summary->collection_date = $this->collection_date;
+                    $payment_summary->amount_paid = $this->amount_paid;
+                    $payment_summary->uploader_id = $this->uploader_id;
+                    $payment_summary->principal_not_collected = $this->principal_not_collected;
+                    $payment_summary->interest_not_collected = $this->interest_not_collected;
+                    //$payment_summary->interest_amount_due = $this->interest_due;
+                    //$payment_summary->principal_amount_due = $this->principal_due;
+                    $payment_summary->total_amount_due = $this->expected_amount;
+                    
+                    $payment_summary->isFullyPaid = $this->isFullyPaid;   
+                    
+                    $payment_summary->save();
+                    $p_id = $payment_summary->id;                    
+                    /*$ps_array = array('disbursement_id'=>1,
+                                'collection_date'=>1,
+                                'amount_paid'=>1,
+                                'principal_not_collected'=>1,
+                                'interest_not_collected'=>1,
+                                'uploader_id'=>1,
+                                'isFullyPaid'=>1
+                                );
+                    */
+                   
+                      
+                    
+                    foreach($this->collection as $key => $value){
+                        
+                        $paymentSummaries[] = array(
+                            'payment_summary_id' => $p_id, 
+                            'amort_id' => $value->amort_id, 
+                            'amount_paid' => $value->amount_paid, 
+                            'principal_paid' => $value->principal_paid, 
+                            'interest_paid' => $value->interest_paid, 
+                            'this_week_balance' => $value->this_week_balance, 
+                            'week_interest_balance' => $value->week_interest_balance, 
+                            'week_principal_balance' => $value->week_principal_balance,
+                            'payment_type'=>env('payment_type')
+                        ); 
+                    }
+                    
+                    $payment_informations = new \App\Payment_Information;
+                 
+                    if($payment_informations->insert($paymentSummaries)){
+                        $cbu = new \App\CBU;    
+                        $cbu->insert($this->cbuValues);
+                        
+                        destroy_session('readFile');
+                        \DB::commit();
+                        return true;
+                        
+                    }else{
+                        return false;
+                    }  
+            }catch(Exception $e){
+                \DB::rollback();
+                return false;
             }
-            dd($this);
+            return false;
+            
+          
         }
         public function computePayments(){
             
@@ -113,6 +204,9 @@ namespace App\MyClass{
             $total_paid=0;
             $interest_paid=0;
             $principal_paid=0;
+            $interest_due=0;
+            $principal_due=0;
+            $total_due=0;
             $interest_not_collected=0;
             $principal_not_collected=0;
             $expected_amount = 0;
@@ -125,12 +219,21 @@ namespace App\MyClass{
                 $interest_not_collected+=$v->week_interest_balance;
                 $principal_not_collected+=$v->week_principal_balance;
                 $expected_amount+=$v->principal_with_interest;
+                $interest_due+=$v->week_interest_balance;
+                $principal_due+=$v->week_principal_balance;
+                $total_due=0;
             }
                 $this->amount_paid = $total_paid;
                 $this->expected_amount = $expected_amount;
+
                 $this->interest_amount = $interest_paid;
                 $this->principal_amount = $principal_paid; 
-
+                
+                $this->interest_due = $interest_due;
+                $this->principal_due = $principal_due; 
+                $this->total_due = $interest_due + $principal_due;
+                
+                
                 $this->principal_not_collected = $principal_not_collected; 
                 $this->interest_not_collected = $interest_not_collected; 
             if(!($this->principal_not_collected == 0 && $this->interest_not_collected == 0)){

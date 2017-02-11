@@ -1,7 +1,6 @@
 @extends('layouts.admin-layout')
 @section('content')
     <div id="step-1">
-      
         <div class="row">
             <div class="col-lg-12">
               
@@ -108,8 +107,8 @@
                         <td>{{$x->clientInfo->firstname. ' '.$x->clientInfo->lastname}}</td>
                         <td>{{pesos($x->principal_this_week)}}</td>
                         <td>{{pesos($x->interest_this_week)}}</td>
-                        <td class="alert alert-danger">{{pesos(0)}}</td>
-                        <td>{{pesos($x->principal_with_interest)}}</td>
+                        <td class="alert alert-danger">{{pesos($x->pastDue()->total_amount)}}</td>
+                        <td>{{pesos($x->principal_with_interest+$x->pastDue()->total_amount)}}</td>
                         <td>{{pesos($x->principal_balance)}}</td>
                         <td>{{pesos($x->interest_balance)}}</td>
                     </tr>

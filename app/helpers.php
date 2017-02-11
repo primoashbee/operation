@@ -65,7 +65,10 @@ function is_decimal( $val )
     return is_numeric( $val ) && floor( $val ) != $val;
 }
 function is_weekend($date) {
-
+    //dd($date);
+    //dd(strtotime($date));
+    //$new = date('y-m-d',strtotime($date));
+    //dd(date('l',strtotime($new))=='Sunday');
     if(date('l', strtotime($date)) == 'Sunday' || date('l', strtotime($date)) == 'Saturday')  {
         return true;
     } else {

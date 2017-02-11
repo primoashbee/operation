@@ -7,13 +7,21 @@ use Illuminate\Http\Request;
 class CollectionController extends Controller
 {
     public function index(){
+        
         $clusters = new \App\Disbursement_Information;
         $clusters = $clusters->activeForCollection();
-        //$now = \Carbon\Carbon::now();
-        //$today = $now->year .'-'.$now->month.'-'.$now->day;
-        $today = \Carbon\Carbon::today()->toDateString();
+        $settings = new \App\MyClass\Settings;
+        
+        $today = $settings->date->toDateString();
         return view('pages.view-loans-for-collection',['clusters'=>$clusters,'today'=>$today]);
     }
+    public function collectedIndex(){
+        $summaries = new \App\Payment_Summary;
+        $summaries = $summaries::orderBy('collection_date','desc')->get();
+     
+        return view('pages.view-collected-summaries',['summaries'=>$summaries]);
+    }
+
     public function getCollectionValues($id,$date){
         $cluster = new \App\Disbursement_Information;
       
@@ -25,6 +33,7 @@ class CollectionController extends Controller
     }
     public function readCollectionValues($id,$date,Request $request){
         destroy_session('readFile');
+        destroy_session('sheet_name');
         $cluster = new \App\Disbursement_Information;
       
         $due = $cluster::find($id)->getCollectionThisDaySet($date);
@@ -46,16 +55,16 @@ class CollectionController extends Controller
             }else{
                 $isError = false;
                 $file = $request->fileUpload->getRealPath();
-                
-                \Session::forget('sheet_name');
                 $load =\Excel::load($file,function($reader){
                         $sheetName = $reader->getSheetNames(0)[0];
                         \Session::put('sheet_name',$reader->getSheetNames(0)[0]);          
                 })->toObject();
+                
                 //dd($sheetName);
                 $readFile = new \App\MyClass\Collection_Upload;
                 //dd($load{0}->titles);
                 $readFile->get($load{0},\Session::get('sheet_name')); //Load only Sheet 1
+                
                 //dd($readFile->errorBag);
                 if($readFile->hasErrors){    
                     return \Redirect::back()
@@ -67,6 +76,7 @@ class CollectionController extends Controller
             }
      
         \Session::put('readFile',$readFile);
+        
         return view('pages.collect-from-cluster',['due'=>$due,'date'=>$date,'dibursement_id'=>$id,'readFile'=>$readFile,'passed'=>true]);
         //dd($request->all());
     }
@@ -74,8 +84,9 @@ class CollectionController extends Controller
         $isValid = true;
 
          if(session_exists('readFile')){
+             //instanct of collection_uploade class
              $obj = \Session::get('readFile');
-            
+             
              $isDateValid = [];
              foreach($obj->collection as $key => $value){
 
@@ -95,10 +106,20 @@ class CollectionController extends Controller
             }
          }else{
                 $isValid=false;
-                echo 'File Error. Please go back to uploading of collections. Thank You';
+                //echo 'File Error. Please go back to uploading of collections. Thank You';
+                \Session::flash('failmsg','File Error! Please go back to uploading of collections. Thank You');
+                return back();
          }
          if($isValid){
-             $obj->save();
+            
+             if($obj->save()){
+                
+                \Session::flash('goodmsg','Collection Updated!');
+                 return back();
+             }else{
+                 \Session::flash('failmsg','Server Error!');
+                return back();
+             }
          }
     }
     public function createAmortScheduling($amt){
@@ -164,7 +185,7 @@ class CollectionController extends Controller
             if($validator->fails()){
                   return redirect()->back()->withErrors($validator)->withInput();
             }
-            dd($request->all());
+         
     }
     public function readCollection(Request $request){
             

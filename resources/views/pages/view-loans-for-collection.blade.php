@@ -52,8 +52,8 @@
             <thead>
                 <th>Cluster Code</th>
                 <th>Members</th>
-                <th>Last Collection</th>
-                <th>Next Collection</th>
+                <th>Recent Collection Date</th>
+                <th>Next Collection Date</th>
                 <th>Paid</th>
                 <th>Loan Amount</th>
                
@@ -67,8 +67,8 @@
                     <tr>
                         <td>{{$x->clusterInfo->code}}</td>
                         <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
-                        <td>01/13/2017</td>
-                        <td>01/20/2017</td>
+                        <td>{{$x->lastCollection()}}</td>
+                        <td>{{$x->nextCollection()}}</td>
                         <td><b>{{money_format(0)}}</b></td>
                         <td><b>{{money_format($x->loan_amount)}}</b></td>
                         <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>

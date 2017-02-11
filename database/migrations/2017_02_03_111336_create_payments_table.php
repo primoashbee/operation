@@ -16,10 +16,16 @@ class CreatePaymentsTable extends Migration
         
         Schema::create('payment_summaries', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('cluster_code');
-            $table->string('collection_date');
-            $table->integer('amount_paid');
-            $table->integer('uploader_id');
+            $table->string('disbursement_id')->nullable();
+            $table->string('collection_date')->nullable();
+            $table->integer('total_amount_due')->unsigned()->nullable();
+            //$table->integer('principal_amount_due')->unsigned()->nullable();
+            //$table->integer('interest_amount_due')->unsigned()->nullable();
+            $table->integer('amount_paid')->unsigned()->nullable();
+            $table->integer('principal_not_collected')->unsigned()->nullable();
+            $table->integer('interest_not_collected')->unsigned()->nullable();
+            $table->integer('uploader_id')->unsigned()->nullable();
+            $table->boolean('isFullyPaid')->nullable();
             $table->timeStamps();
             
             //
@@ -27,13 +33,15 @@ class CreatePaymentsTable extends Migration
         
         Schema::create('payment_informations', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('amort_id');
-            $table->integer('amount_paid');
-            $table->integer('principal_paid');
-            $table->integer('interest_paid');
-            $table->integer('this_week_balance');
-            $table->integer('week_interest_balance');
-            $table->integer('week_principal_balance');
+            $table->integer('payment_summary_id')->unsigned()->nullable();
+            $table->integer('amort_id')->unsigned()->nullable();
+            $table->integer('amount_paid')->unsigned()->nullable();
+            $table->integer('principal_paid')->unsigned()->nullable();
+            $table->integer('interest_paid')->unsigned()->nullable();
+            $table->integer('this_week_balance')->unsigned()->nullable();
+            $table->integer('week_interest_balance')->unsigned()->nullable();
+            $table->integer('week_principal_balance')->unsigned()->nullable();
+            $table->string('payment_type')->nullable();
             //
         });
         

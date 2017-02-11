@@ -47,13 +47,15 @@ class Amortization extends Model
         foreach($amortz as $x){
             $return[] = array(
                 'amort_id'=>$x->id,
+                'client_id'=>$x->client_id,
+                'week'=>$x->week,
                 'client_name'=>$x->clientInfo->firstname.' '.$x->clientInfo->lastname,
-                'principal_this_week'=>$x->principal_this_week,
-                'interest_this_week'=>$x->interest_this_week,
-                'principal_with_interest'=>$x->principal_with_interest,
                 'principal_balance'=>$x->principal_balance,
                 'interest_balance'=>$x->interest_balance,
-                'collection_date'=>$x->collection_date
+                'collection_date'=>$x->collection_date,
+                'principal_this_week'=>$x->principal_this_week,
+                'interest_this_week'=>$x->interest_this_week,
+                'principal_with_interest'=>$x->principal_with_interest
             );
         }
         return $return;
@@ -80,5 +82,23 @@ class Amortization extends Model
     }
     public function getLoanAmount(){
         return $this->hasOne('App\Loans','disbursement_id','disbursement_id');
+    }
+    public function pastDue(){
+        //return $this->join('past_dues','past_dues.week','=','amortization.week')->get();
+        //return $this->disbursement_id;
+        
+        $past_due = new \App\Past_Due;
+        $week = $this->week;
+        //return  "Select * from past_dues where to_be_collected_on = '".add_seven_days($this->collection_date)."' and client_id = '".$this->client_id."' and week_to_be_paid ='".$week."'";
+        $x = $past_due::
+                where('week_to_be_paid','=',$week)
+                ->where('to_be_collected_on','=',$this->collection_date)
+                ->where('client_id','=',$this->client_id)
+                ->where('disbursement_id','=',$this->disbursement_id);
+        if($x->count() == 0){
+            return 0;
+        }else{
+            return $x->first();
+        }
     }
 }

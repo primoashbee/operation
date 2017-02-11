@@ -10,6 +10,7 @@
 |
 */
 date_default_timezone_set('Asia/Singapore');
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -53,6 +54,8 @@ Route::post('/Loans/Collection/{id}/{date}','CollectionController@readCollection
 Route::get('/Loans/Collection/{id}/{date}/Save','CollectionController@saveCollectionValues');
 
 
+Route::get('/Collected','CollectionController@collectedIndex');
+
 //Route::get('/Loans/Application', 'LoanController@index');
 
 
@@ -70,7 +73,7 @@ Route::get('/Api/Date/Amortization/',function(){
     
     //dd(is_weekend($from));
 
-    $daystosum = 24 * 4; 
+    $daystosum = 24 * 7; 
     $datesum = date('Y-m-d', strtotime($from.' + '.$daystosum.' days'));
     $day = date('l', strtotime($from.' + '.$daystosum.' days'));
     $x = date('W', strtotime($from.' + '.$daystosum.' days'));
