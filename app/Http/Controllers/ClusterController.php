@@ -105,14 +105,15 @@ class ClusterController extends Controller
         $cluster_information=$cluster::find($id);
 
         $members= new \App\Cluster_Members;
+        
       //  dd($members->listToAdd($id)->all());
         
         $cluster_members = $members::where('cluster_id','=',$id)->paginate(15);
         
         $clients = new \App\Client_Information;
         //$clients = $members->listToadd($id)->all();
-        $clients =$clients::all();
-     
+        $clients =$clients->hasNoCluster();
+        
         return view('pages.view-cluster-members',['clients_to_add'=>$clients,'members'=>$cluster_members,'cluster_info'=>$cluster_information,'id'=>$id]);
         
     }

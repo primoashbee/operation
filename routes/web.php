@@ -55,6 +55,7 @@ Route::get('/Loans/Collection/{id}/{date}/Save','CollectionController@saveCollec
 
 
 Route::get('/Collected','CollectionController@collectedIndex');
+Route::get('/Collected/{id}','CollectionController@viewCollected');
 
 //Route::get('/Loans/Application', 'LoanController@index');
 

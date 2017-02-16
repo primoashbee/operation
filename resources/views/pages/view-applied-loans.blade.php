@@ -65,7 +65,7 @@
                     <tr>
                         <td>{{$x->clusterInfo->code}}</td>
                         <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
-                        <td><b>{{money_format(0)}}</b></td>
+                        <td><b>{{money_format($x->totalPaid())}}</b></td>
                         <td><b>{{money_format($x->loan_amount)}}</b></td>
                         <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>
                         <td><a href="{{url()->current().'/'.$x->id}}"><button type = "button"     class="btn btn-default btn-sm">Check Composition</button></a></td>

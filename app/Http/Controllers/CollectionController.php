@@ -21,15 +21,34 @@ class CollectionController extends Controller
      
         return view('pages.view-collected-summaries',['summaries'=>$summaries]);
     }
+    public function viewCollected($id){
+        $collected = new \App\Payment_Information;
+        $collected = $collected::where('payment_summary_id','=',$id)->get();
+        if(!$collected->count()> 0){
+            return 'INVALID';
+        }
+        foreach($collected as $key => $value ){
+            dd(array_keys((array)$value));
 
+            $key = array_keys((array)$value);
+            echo $key[0].'<br>';
+            //echo dd($value).'<br>';
+        }
+    }
     public function getCollectionValues($id,$date){
+        
         $cluster = new \App\Disbursement_Information;
-      
+        if($cluster::find($id)==null){
+            return redirect('/Loans/Collection');
+        }
         $due = $cluster::find($id)->getCollectionThisDaySet($date);
+        
         $due = new \App\Amortization;
         $due = $due->todayCollectionByIdAndDate($id,$date);
         
-        return view('pages.collect-from-cluster',['due'=>$due,'date'=>$date,'dibursement_id'=>$id]);
+        $loans = new \App\Disbursement_Information;
+        $loans = $loans::find($id);
+        return view('pages.collect-from-cluster',['loans'=>$loans,'due'=>$due,'date'=>$date,'dibursement_id'=>$id]);
     }
     public function readCollectionValues($id,$date,Request $request){
         destroy_session('readFile');
@@ -40,7 +59,13 @@ class CollectionController extends Controller
         $due = new \App\Amortization;
         $due = $due->todayCollectionByIdAndDate($id,$date);
         $collection = '';
-
+       
+        if(!env('dev_mode')){
+            if($date != \Carbon\Carbon::now()->toDateString()){
+                $validator = ['Invalid Date'];
+                return redirect()->back()->withErrors($validator);
+            }
+        }
             $rules = ['fileUpload'=>'mimes:xlsx,xls | required'];
             $msg = ['fileUpload.mimes'=>'Invalid File Type(.xlxs only)','fileUpload.required'=>'File upload is required'];
            
@@ -84,7 +109,7 @@ class CollectionController extends Controller
         $isValid = true;
 
          if(session_exists('readFile')){
-             //instanct of collection_uploade class
+             //instant of collection_upload class
              $obj = \Session::get('readFile');
              
              $isDateValid = [];
@@ -153,11 +178,12 @@ class CollectionController extends Controller
         echo 'tI:     '.pesos($i_total).'<br>';
     }
     public function getCollectionThisDay($disbursement_id){
+        
         $amortization = new \App\Amortization;
         $date = \Request::get('collection_date');
 
         $collection = $amortization::where('disbursement_id','=',$disbursement_id)->where('collection_date','=',$date)->get();
-       
+        
         $loans = new \App\Disbursement_Information;
         $loans = $loans::find($disbursement_id);
         $collections = $amortization->getProjectedPaid($disbursement_id,$date);
@@ -175,6 +201,7 @@ class CollectionController extends Controller
         $projected = new \App\MyClass\Projected_Collection;
         
         $projected->set($tp,$ti,$p_balance,$i_balance,$loans->loan_amount);
+        
         return view('pages.view-cluster-collection-per-day',['data'=>$collection,'loans'=>$loans,'projected'=>$projected,'disbursement_id'=>$disbursement_id]);
     }
     public function postCollectionValues(Request $request){

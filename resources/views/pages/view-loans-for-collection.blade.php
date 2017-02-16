@@ -62,17 +62,17 @@
                 <th>Action</th>
             </thead>
             <tbody>
-           
                 @foreach($clusters as $x)
                     <tr>
                         <td>{{$x->clusterInfo->code}}</td>
                         <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
                         <td>{{$x->lastCollection()}}</td>
                         <td>{{$x->nextCollection()}}</td>
-                        <td><b>{{money_format(0)}}</b></td>
+                        <td><b>{{pesos($x->totalPaid())}}</b></td>
                         <td><b>{{money_format($x->loan_amount)}}</b></td>
+           
                         <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>
-                        <td><a href="{{url()->current().'/'.$x->id.'/'.$today}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>
+                        <td><a href="{{url()->current().'/'.$x->id.'/'.$x->nextCollection()}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>
                     </tr>
                 @endforeach
             </tbody>

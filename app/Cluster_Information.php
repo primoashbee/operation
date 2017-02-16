@@ -19,5 +19,19 @@ class Cluster_Information extends Model
     public function totalMembers($id){
         return total_cluster_members($id);
     }
+    public function status(){
+        $payment_summaries = new \App\Payment_Summary;
+        //if($payment_summaries::find($this->id)->collection_date){}
+        if(is_null($payment_summaries::find($this->id))){
+            return 'Ready for Application';
+        }else{
+            return 'On-Going Collection';   
+        }
+        
+    }
+    public function countMembers(){
+        $cluster_members = new \App\Cluster_Members;
+        return $cluster_members::where('cluster_id','=',$this->id)->count();
+    }
     
 }

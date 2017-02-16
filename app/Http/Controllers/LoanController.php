@@ -13,7 +13,6 @@ class LoanController extends Controller
         $clusters = $all::paginate(15);
         $products = new \App\Products;
         $product = $products::all();
-
         return view('pages.apply-loan',['clusters'=>$clusters,'products'=>$product]);
     }
     public function getAnalysisById(Request $request){

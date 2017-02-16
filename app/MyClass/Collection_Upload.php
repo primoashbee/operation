@@ -29,20 +29,20 @@ namespace App\MyClass{
             
             //dd($obj{0}->getSheetName());
             $cbu = new \App\CBU;
-            
+           
             $cbu->get($obj);
             
             $this->cbuValues = $cbu->cbuValues();
             
             //dd($cbu->get($obj));
             $this->collection = $obj;
-            
+          
             $this->disbursement_id = $sheetname;
             $this->uploader_id = 1;
             
             $this->computeData($obj);
+           
             $this->validateData($obj);
-          
             
         }
         public function validateData($obj){
@@ -51,7 +51,7 @@ namespace App\MyClass{
            
             $collections = new \App\Payment_Summary;
             $settings = new \App\MyClass\Settings;
-        
+            $pfs = new \App\Payment_Information;
             foreach($obj as $row){
                 //dd($row);
                 
@@ -61,7 +61,7 @@ namespace App\MyClass{
                 }elseif(!is_numeric($row->amort_id)){
                     //amortization id is not a number
                     $errorBag[] = (object) array('msg'=> 'amort_id is invalid for Client: '.$row->client_name.' (See Row: '.$currentRow.' | Redownload CCR and see Instructions (Sheet 2))' );
-                }elseif($row->amount_paid > $row->principal_with_interest){
+                }elseif($row->amount_paid > $row->total_amount_due){
                  //amount paid > amount due
                     $errorBag[] = (object) array('msg'=> 'AMOUNT PAID ('.pesos($row->amount_paid).') greater than the amount_due ('.pesos($row->principal_with_interest).') for Client: '.$row->client_name.' (See Row: '.$currentRow.')');
                 }elseif($row->amount_paid===null){
@@ -83,11 +83,29 @@ namespace App\MyClass{
                 */
                 }elseif($collections::where('disbursement_id','=',$this->disbursement_id)->where('collection_date','=',$row->collection_date)->count() > 0){
                     $errorBag[] = (object) array('msg'=>'Already uploaded collection for this day');
+                }elseif($collections::where('disbursement_id','=',$this->disbursement_id)->count()==0){
+                //no skip computePayments
+                    $d_info = new \App\Disbursement_Information;
+                    $f_date = $d_info::find($this->disbursement_id)->first_collection_date;
+                    if($this->collection{0}->collection_date != $f_date){
+                        $errorBag[] = (object) array('msg'=>'No skipping on CCR uploading. Collection for '.$f_date.' is missing');
+                    }
+                }elseif($collections::where('disbursement_id','=',$this->disbursement_id)->count()>0){
+                //no skip computePayments
+                    $ps = new \App\Disbursement_Information;
+                    //$ps = $ps::where('disbursement_id','=',$this->disbursement_id)->first();
+                    $nextCollection = $ps::find($this->disbursement_id)->nextCollection();
+                    
+                    if($this->collection{0}->collection_date != $nextCollection){
+                        $errorBag[] = (object) array('msg'=>'No skipping on CCR uploading. Collection due date is '.$nextCollection);
+                    }
+                    
                 }
 
                 $currentRow++;
               
             }
+            //dd($collections::first()->collection_date);
             $this->errorBag = $errorBag;
             if(count($this->errorBag)>0){
                 $this->hasErrors =true;
@@ -98,29 +116,47 @@ namespace App\MyClass{
         public function computeData($obj){
             $count = $obj->count();
             for($x=0; $x<=$count-1;$x++){
-                if($obj{$x}->amount_paid==$obj{$x}->principal_with_interest){
-                    $interest = round(($obj{$x}->interest_this_week/ $obj{$x}->principal_with_interest) * $obj{$x}->amount_paid);
-                    $principal = $obj{$x}->principal_with_interest - $interest;
+                //paid == total amount due
+                /*  
+                if($obj{$x}->amount_paid==$obj{$x}->total_amount_due){
+                    $interest = round((($obj{$x}->interest_this_week + $obj{$x}->past_due_interest)/ $obj{$x}->total_amount_due) * $obj{$x}->amount_paid);
+                  
+                  
+                   
+                    $principal = $obj{$x}->total_amount_due - $interest;
                     $obj{$x}= array_add($obj{$x},'principal_paid',$principal);
                     $obj{$x}= array_add($obj{$x},'interest_paid',$interest);
-                    $obj{$x}= array_add($obj{$x},'this_week_balance',$obj{$x}->principal_with_interest - $obj{$x}->amount_paid);
-                    $obj{$x}= array_add($obj{$x},'week_interest_balance',$obj{$x}->interest_this_week - $interest);
-                    $obj{$x}= array_add($obj{$x},'week_principal_balance',$obj{$x}->principal_this_week - $principal);
+                    $obj{$x}= array_add($obj{$x},'this_week_balance',$obj{$x}->total_amount_due - $obj{$x}->amount_paid);
+                    $obj{$x}= array_add($obj{$x},'week_interest_balance',($obj{$x}->interest_this_week + $obj{$x}->past_due_interest) - $interest);
+                    $obj{$x}= array_add($obj{$x},'week_principal_balance',($obj{$x}->principal_this_week  + $obj{$x}->past_due_principal)  - $principal);
 
-                }elseif($obj{$x}->amount_paid!=$obj{$x}->principal_with_interest){
-                    $interest = round(($obj{$x}->interest_this_week/ $obj{$x}->principal_with_interest) * $obj{$x}->amount_paid);
+                }elseif($obj{$x}->amount_paid!=$obj{$x}->total_amount_due){
+                    $interest = round((($obj{$x}->interest_this_week + $obj{$x}->past_due_interest)/ $obj{$x}->total_amount_due) * $obj{$x}->amount_paid);
                     
-                    $principal = $obj{$x}->amount_paid - $interest;
-                    
+                    $principal = $obj{$x}->total_amount_due - $interest;
+                     
                     $obj{$x}= array_add($obj{$x},'principal_paid',$principal);
                     $obj{$x}= array_add($obj{$x},'interest_paid',$interest);
-                    $obj{$x}= array_add($obj{$x},'this_week_balance',$obj{$x}->principal_with_interest - $obj{$x}->amount_paid);
-                    $obj{$x}= array_add($obj{$x},'week_interest_balance',$obj{$x}->interest_this_week - $interest);
-                    $obj{$x}= array_add($obj{$x},'week_principal_balance',$obj{$x}->principal_this_week - $principal);
-
+                    $obj{$x}= array_add($obj{$x},'this_week_balance',$obj{$x}->total_amount_due - $obj{$x}->amount_paid);
+                    $obj{$x}= array_add($obj{$x},'week_interest_balance',($obj{$x}->interest_this_week + $obj{$x}->past_due_interest) - $interest);
+                    $obj{$x}= array_add($obj{$x},'week_principal_balance',($obj{$x}->principal_this_week  + $obj{$x}->past_due_principal)  - $principal);
+                    
                 }
+                */
+                $interest_percentage = (($obj{$x}->interest_this_week + $obj{$x}->past_due_interest)/ $obj{$x}->total_amount_due);
+                $interest = round( $interest_percentage * $obj{$x}->amount_paid);
+                $principal = $obj{$x}->total_amount_due - $interest;
+                    
+                $this_week_balance =  $obj{$x}->total_amount_due - $obj{$x}->amount_paid;
+                $week_interest_balance = round($interest_percentage * $this_week_balance);
+                $week_principal_balance = $this_week_balance - $week_interest_balance;
+                $obj{$x}= array_add($obj{$x},'principal_paid',$principal);
+                $obj{$x}= array_add($obj{$x},'interest_paid',$interest);
+                $obj{$x}= array_add($obj{$x},'this_week_balance',$this_week_balance);
+                $obj{$x}= array_add($obj{$x},'week_interest_balance',$week_interest_balance);
+                $obj{$x}= array_add($obj{$x},'week_principal_balance',$week_principal_balance);
+                    
             }
-           
             $this->collection = $obj;
         
         }
@@ -129,12 +165,13 @@ namespace App\MyClass{
             \DB::beginTransaction();
             try{
                     $this->collection_date = $this->collection{0}->collection_date;
+                  
                     $this->computePayments();
                     $past_due = new \App\Past_Due;
                     $past_due->get($this);
-                    $past_due->insert($past_due->insertValues);
                     $payment_summary = new \App\Payment_Summary;
-                    
+                   
+                 
                     $payment_summary->disbursement_id = $this->disbursement_id;
                     
                     $payment_summary->collection_date = $this->collection_date;
@@ -143,11 +180,15 @@ namespace App\MyClass{
                     $payment_summary->principal_not_collected = $this->principal_not_collected;
                     $payment_summary->interest_not_collected = $this->interest_not_collected;
                     //$payment_summary->interest_amount_due = $this->interest_due;
-                    //$payment_summary->principal_amount_due = $this->principal_due;
-                    $payment_summary->total_amount_due = $this->expected_amount;
+                    //$payment_summary->principal_amount_due = $this->principal_due
+                    //dd($this);
+                    $payment_summary->this_week_due = $this->expected_amount;
+                    $payment_summary->this_week_total_amount_due = $this->expected_amount + $past_due->total_due;
+                    $payment_summary->last_week_past_due= $past_due->total_due;
                     
-                    $payment_summary->isFullyPaid = $this->isFullyPaid;   
-                    
+                    $payment_summary->isFullyPaid = $this->isFullyPaid; 
+                  
+                    $past_due->insert($past_due->insertValues);
                     $payment_summary->save();
                     $p_id = $payment_summary->id;                    
                     /*$ps_array = array('disbursement_id'=>1,
@@ -212,7 +253,6 @@ namespace App\MyClass{
             $expected_amount = 0;
            
             foreach($this->collection as $k => $v){
-                
                 $total_paid+=$v->amount_paid;
                 $interest_paid+=$v->interest_paid;
                 $principal_paid+=$v->principal_paid;

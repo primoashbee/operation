@@ -66,6 +66,7 @@ namespace App\MyClass{
                             't_interest'=>0,
                             'collection_date'=>NULL
                         );
+              
                 }elseif($x==$weeks){
                   
                     $interest_this_week = $this->interest_value - $i_total;
@@ -110,11 +111,14 @@ namespace App\MyClass{
                             'collection_date'=>$date
                         );
                         
+                $date= add_seven_days($date);
                 }
                
-                $date= add_seven_days($date);
+              
+            
                // dd($collection_date->msg);
             }
+            
             $this->table = $table;
             $this->t_principal = $p_total;
             $this->t_interest = $i_total;

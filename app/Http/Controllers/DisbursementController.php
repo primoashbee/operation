@@ -15,17 +15,18 @@ class DisbursementController extends Controller
         $cluster = $clusters::find($id);
         //check if cluster has on going transaction;
         if($cluster->totalMembers($id)==0){
-            return back()->with('status',['code'=>0,'msg'=>'This cluster ['.$cluster->code.'] has ZERO MEMBERS']);
+            return redirect('/Loans/Application')->with('status',['code'=>0,'msg'=>'This cluster ['.$cluster->code.'] has ZERO MEMBERS']);
         }
         if($loans==null){
         }else{
             if($loans->status =='on-going'){
                 
-                return back()->with('status',['code'=>0,'msg'=>'This cluster ['.$loans->clusterInfo->code.'] has ON GOING transaction']);
+                return redirect('/Loans/Application')->with('status',['code'=>0,'msg'=>'This cluster ['.$loans->clusterInfo->code.'] has ON GOING transaction']);
             }
         }
-
+        
         $members = $members::where('cluster_id','=',$id)->paginate(20);
+       
         $products = new \App\Products;
         $mpl = $products::first();
         return view('pages.cluster-disburse',['clients'=>$members,'cluster_id'=>$id,'weeks_to_pay'=>$mpl->weeks_to_pay]);
@@ -40,7 +41,6 @@ class DisbursementController extends Controller
         if($loans->where('status','=','on-going')->exists()){
             return back()->with('status',['code'=>0,'msg'=>'This cluster has ON GOING transaction']);
         }
-      
         $number_of_clients= count($request->loan_amount);
         //if clients did not reached minimum 10 clients
         if($number_of_clients<0){
@@ -69,6 +69,7 @@ class DisbursementController extends Controller
         $loans = new Disbursement_Information();
        
         //dd($input); 
+    
         $disbursement_id=$loans->create($input);
         
 

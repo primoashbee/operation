@@ -34,12 +34,14 @@
             <thead>
                 <th>Cluster Code</th>
                 <th>Disbursement Date</th>
-                <th>Due</th>
+                <th>Previous Week Due</th>
+                <th>Amortization Due</th>
+                <th>This Week Due</th>
                 <th>Collected Amount</th>
-                <th>Interest Due</th>
-                <th>Principal Due</th>
-                <th>Total Past Due</th>
-                <th>Collection Date</th>
+               
+                <th>Past Due</th>
+                <th>Collected On</th>
+                <th>Action</th>
                 
             </thead>
             
@@ -48,13 +50,14 @@
                     <tr>
                         <td>{{$x->getDisbursement->clusterInfo->code}}</td>
                         <td>{{$x->getDisbursement->release_date}}</td>
-                        <td>{{pesos($x->total_amount_due)}}</td>
+                        <td class="alert alert-danger">{{pesos($x->last_week_past_due)}}</td>
+                        <td class="alert alert-warning">{{pesos($x->this_week_due)}}</td>
+                        <td class="alert alert-success">{{pesos($x->this_week_total_amount_due)}}</td>
                         <td>{{pesos($x->amount_paid)}}</td>
-                       
-                        <td class="alert alert-danger">{{pesos($x->interest_not_collected)}}</td>
-                        <td class="alert alert-danger">{{pesos($x->principal_not_collected)}}</td>
                         <td class="alert alert-danger">{{pesos($x->interest_not_collected + $x->principal_not_collected)}}</td>
                         <td>{{$x->collection_date}}</td> 
+                        
+                        <td><a href="{{url()->current().'/'.$x->id}}" class="btn-icon"><button class="btn"><i class="fa fa-eye" aria-hidden="true"></i></button></a></td> 
                         
                     </tr>
                 @endforeach

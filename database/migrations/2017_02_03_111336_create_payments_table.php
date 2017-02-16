@@ -18,7 +18,9 @@ class CreatePaymentsTable extends Migration
             $table->increments('id');
             $table->string('disbursement_id')->nullable();
             $table->string('collection_date')->nullable();
-            $table->integer('total_amount_due')->unsigned()->nullable();
+            $table->integer('this_week_due')->unsigned()->nullable();
+            $table->integer('this_week_total_amount_due')->unsigned()->nullable();
+            $table->integer('last_week_past_due')->unsigned()->nullable();
             //$table->integer('principal_amount_due')->unsigned()->nullable();
             //$table->integer('interest_amount_due')->unsigned()->nullable();
             $table->integer('amount_paid')->unsigned()->nullable();
@@ -44,14 +46,7 @@ class CreatePaymentsTable extends Migration
             $table->string('payment_type')->nullable();
             //
         });
-        
-        Schema::create('cbu_collections', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('payment_summaries_id')->unsigned();
-            $table->integer('amort_id')->unsigned();
-            $table->integer('amount')->unsigned();
-            //
-        });
+      
         
     }
 
@@ -63,9 +58,9 @@ class CreatePaymentsTable extends Migration
     public function down()
     {
         
-        Schema::drop('payment_summaries');
-        Schema::drop('payment_informations');
-        Schema::drop('cbu_collections');
+        Schema::dropIfExists('payment_summaries');
+        Schema::dropIfExists('payment_informations');
+     
         
         
     }

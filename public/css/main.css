@@ -9,6 +9,11 @@
     position: relative;
     overflow: hidden;
 }
+
+.emphasized{
+  font-weight:bold;
+}
+
 .btn-file input[type=file] {
     position: absolute;
     top: 0;
@@ -32,6 +37,10 @@
 
 .modal2 {
   text-align: center;
+}
+
+.btn-icon{
+   color:black;
 }
 
 @media screen and (min-width: 768px) { 

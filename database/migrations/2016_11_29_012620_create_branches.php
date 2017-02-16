@@ -33,7 +33,7 @@ class CreateBranches extends Migration
     public function down()
     {
         
-        Schema::drop('branches');
+        Schema::dropIfExists('branches');
         
     }
 }

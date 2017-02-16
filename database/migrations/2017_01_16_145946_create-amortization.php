@@ -36,7 +36,7 @@ class CreateAmortization extends Migration
     public function down()
     {
         
-        Schema::drop('weekly_amortization');
+        Schema::dropIfExists('weekly_amortization');
         
     }
 }

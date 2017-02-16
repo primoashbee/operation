@@ -73,12 +73,24 @@
         </div>
         <div class="col-lg-6 col-md-6">
             <form action = "{{url()->current()}}" method="GET" id="form_filter">
-                
+                    
                 <select class="form-control" name="collection_date"  id="collection_date" >
-                        <option value=""> - </option>
+                    @if(\Request::get('collection_date')==null)
+                        <option value="">
+                            -
+                        </option>
+                    @else
+                    <option value="{{\Request::get('collection_date')}}">
+                            {{ \Request::get('collection_date') .' | ('.day_name(\Request::get('collection_date')).')'}}
+                    </option>
+                    <option value="">
+                            -
+                    </option>
+                    @endif                        
                     @foreach($loans->getCollectionDates($loans->id) as $x)
                         <option value="{{$x->collection_date}}"> {{$x->collection_date}} | ({{day_name($x->collection_date)}})</option>
                     @endforeach
+                    
                 </select>
             </form>
         </div>
@@ -107,7 +119,9 @@
                         <td>{{$x->clientInfo->firstname. ' '.$x->clientInfo->lastname}}</td>
                         <td>{{pesos($x->principal_this_week)}}</td>
                         <td>{{pesos($x->interest_this_week)}}</td>
+                        
                         <td class="alert alert-danger">{{pesos($x->pastDue()->total_amount)}}</td>
+                        
                         <td>{{pesos($x->principal_with_interest+$x->pastDue()->total_amount)}}</td>
                         <td>{{pesos($x->principal_balance)}}</td>
                         <td>{{pesos($x->interest_balance)}}</td>

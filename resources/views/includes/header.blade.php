@@ -270,7 +270,7 @@
                                     <a href="/Loans/Application">Application</a>
                                 </li>
                                 <li>
-                                    <a href="/Loans/Applied">List of Applied</a>
+                                    <a href="/Loans/Applied">Download CCR</a>
                                 </li>
                                
                                 <li>

@@ -28,4 +28,8 @@ class Payment_Summary extends Model
     public function getDisbursement(){
         return $this->belongsTo('App\Disbursement_Information','disbursement_id');
     }
+    public function getLastPayment(){
+        $ps = new \App\Payment_Summary;
+        return $ps::find($this->id)->orderBy('collection_date','desc')->first();
+    }
 }

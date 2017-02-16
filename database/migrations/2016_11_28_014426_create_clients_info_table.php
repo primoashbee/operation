@@ -76,9 +76,9 @@ class CreateClientsInfoTable extends Migration
     public function down()
     {
         
-        Schema::drop('clients');
-        Schema::drop('client_incomes');
-        Schema::drop('client_businesses');
+        Schema::dropIfExists('clients');
+        Schema::dropIfExists('client_incomes');
+        Schema::dropIfExists('client_businesses');
         
     }
 }

@@ -93,9 +93,10 @@
                                     
                                 </td>
                                 <td style="text-align:center">
+                               
                                     <div class="radio">
                                         <label><input type="checkbox" class="reloan" name="reloan[{{$x->id}}]" p_id = "{{$x->id}} "p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" target-rdb="rdb{{$x->id}}"> Not re-loaning/loaning </label>
-                                        <label  id="rdb{{$x->id}}"><input type="radio" class="rdbPayee" name="payee_id" value="{{$x->id}}" p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" required>Mark As Payee</label>
+                                        <label  id="rdb{{$x->id}}"><input type="radio" class="rdbPayee" name="payee_id" value="{{$x->client_id}}" p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" required>Mark As Payee</label>
                                     </div>
                                     
                                 </td>

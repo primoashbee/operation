@@ -55,8 +55,8 @@ class CreateProductsTable extends Migration
     public function down(){
         
      
-        Schema::drop('products');
-        Schema::drop('credit_limit');
+        Schema::dropIfExists('products');
+        Schema::dropIfExists('credit_limit');
 
     }
 }

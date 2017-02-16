@@ -36,8 +36,8 @@ class CreateClusterMigration extends Migration
     public function down()
     {
         
-        Schema::drop('clusters');
-        Schema::drop('cluster_members');
+        Schema::dropIfExists('clusters');
+        Schema::dropIfExists('cluster_members');
         
     }
 }

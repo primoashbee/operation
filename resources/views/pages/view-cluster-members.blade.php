@@ -53,7 +53,7 @@
                         <td>{{$x->name->cycle}}</td>
                         
                         <td>{{$x->name->home_address}}</td>
-                        <td><a href="/Cluster/{{$id}}/Members/Remove/{{$x->name->id}}"><button class="btn btn-sm btn-danger">Remove </button></a> <a href="/Cluster/{{$x->id}}/Members"><button class="btn btn-sm btn-default">Loans</button></a></td>
+                        <td><a href="/Cluster/{{$id}}/Members/Remove/{{$x->name->id}}"><button class="btn btn-sm btn-danger">Remove </button></a> </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -61,16 +61,15 @@
         </div>
         
         <div id="list_to_add" style="display: none;">
-            <form action "/Cluster/{{Request::segment(1)}}/Members/Add" method= "post">
+            <form action "/Cluster/{{Request::segment(1)}}/Members/Add" method= "post" id="frmAddToCluster">
                 {{csrf_field()}} 
                 <input type="hidden" name = "cluster_id" value="{{$id}}">
 
                 <button class="btn btn-default" id="btn_back"> Back </button>
-                <table class="table table-striped">
+                <table class="table table-striped" id="myTable">
                 <thead>
                 <th></th>
                 <th>Name</th>
-                <th>Loan Cycle(s)</th>
                 <th>Address</th>
                 <th>Action</th>
                 </thead>
@@ -80,7 +79,6 @@
                         <tr>
                         <td><input type="checkbox" name="client_id[]" value="{{$x->id}}"></td>
                         <td>{{$x->lastname}}</td>
-                        <td>{{$x->cycle}}</td>
                         
                         <td>{{$x->home_address}}</td>
                         <td><a href="/Cluster/{{$id}}/Members/Add/{{$x->id}}"><button class="btn btn-sm btn-default">Update Cluster</button></a> <a href="/Cluster/{{$x->id}}/Members"><button class="btn btn-sm btn-default">Loans</button></a></td>
@@ -100,28 +98,41 @@
 @stop
 @section('page-script')
 <script>
+ var oTable
 $(function(){
+    $('#myTable').DataTable();
+    oTable = $('#data_table').dataTable();
     $('#list_to_add').hide();
-})
-    $("#btn_add_members").click(function(){
-        
-        $('#current_members').hide(500)
-        $('#list_to_add').show(500)
-
-    })
-    $("#btn_back").click(function(e){
-        
-        $('#current_members').show(500)
-        $('#list_to_add').hide(500)
-        e.preventDefault()
-
-    })
-    $(document).ready(function() {
     $('tr').click(function(event) {
         if (event.target.type !== 'checkbox') {
         $(':checkbox', this).trigger('click');
         }
     });
+})
+$("#btn_add_members").click(function(){
+    
+    $('#current_members').hide(500)
+    $('#list_to_add').show(500)
+
+})
+$("#btn_back").click(function(e){
+    
+    $('#current_members').show(500)
+    $('#list_to_add').hide(500)
+    e.preventDefault()
+
+})
+
+$('#frmAddToCluster').submit(function () {
+            $("input[name='question']").remove();  //Remove the old values
+            $("input:checked", oTable.fnGetNodes()).each(function(){
+                $('<input type="checkbox" name="questions" ' + 'value="' +
+                  $(this).val() + '" type="hidden" checked="checked" />')
+                    .css("display", "none")
+                    .appendTo('#form');
+            });
 });
+
+
 </script>
 @stop

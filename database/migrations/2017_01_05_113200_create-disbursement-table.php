@@ -41,6 +41,6 @@ class CreateDisbursementTable extends Migration
      */
     public function down()
     {
-        Schema::drop('disbursement');
+        Schema::dropIfExists('disbursement');
     }
 }

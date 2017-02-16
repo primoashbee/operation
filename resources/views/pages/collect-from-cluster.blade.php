@@ -80,6 +80,33 @@
         </div>
             <!-- /.col-lg-12 -->
         </div>
+        <div class="well clearfix">
+            
+            <h2 class="text-center"><b>Disbursement Information</b></h2>
+            <div class="col-lg-4 col-md-4">
+                <h4>CV #: <b>{{$loans->cv_number}}</b></h4>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <h4>PAYEE : <a href ="\Clients\Update\{{$loans->payee_id}}"><b>{{$loans->payeeName->firstname. ' '.$loans->payeeName->lastname}}</b></a></h4>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <h4>RELEASED DATE: <b>{{$loans->release_date}}</b></h4>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <h4>LOAN AMOUNT: <b>{{pesos($loans->loan_amount)}}</b></h4>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <h4>CLUSTER: <b>{{$loans->clusterInfo->code}}</b></h4>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <h4>MATURITY DATE: <b>{{$loans->maturity_date}}</b></h4>
+            </div>
+            <div class="col-lg-12 col-md-12">
+                <h4 style="overflow:ellipsis">CHECK #: <b>{{$loans->check_number}}</b></h4>
+            </div>
+            
+        </div>
+        
         <table class="table table-striped">
             <thead>
                 <th>Client Name</th>
@@ -91,17 +118,13 @@
             </thead>
             
             <tbody>
-        
                 @foreach($due as $x)
-                    <tr>
+                    <tr>    
                         <td>{{$x->clientInfo->firstname.' '.$x->clientInfo->lastname}}</td>
                         <td>{{pesos(individual_total_loan($x->disbursement_id,$x->client_id)->loan_amount) }}</td>
-                        
-                    
-                        <td>{{pesos($x->principal_with_interest)}}</td>
-                        
-                        <td class="alert alert-danger">{{$x->pastDue()!=null ? pesos($x->pastDue()->total_amount) : pesos(0) }}</td>
-                        <td>{{$x->pastDue()!=null ? pesos($x->pastDue()->total_amount + $x->principal_with_interest) : pesos($x->principal_with_interest ) }}</td>
+                        <td>{{pesos($x->principal_with_interest)}}</td>                         
+                        <td class="alert alert-danger">{{pesos($x->pastDue()->total_amount)}}</td>
+                        <td>{{pesos($x->pastDue()->total_amount+ $x->principal_with_interest)}}</td>
                         
                     </tr>
                 @endforeach
@@ -142,9 +165,9 @@
                 
                     <tr>
                         <td>{{$v->client_name}}</td>
-                        <td>{{pesos($v->principal_with_interest)}}</td>
+                        <td>{{pesos($v->total_amount_due)}}</td>
                         <td>{{pesos($v->amount_paid)}}</td>
-                        <td>{{pesos($v->this_week_balance)}}</td>
+                        <td class="{{$v->this_week_balance > 0 ? ' alert-danger' : 'success' }}">{{pesos($v->this_week_balance)}}</td>
                         <td>{{pesos($v->cbu)}}</td>
                     </tr>
                 @endforeach
@@ -161,62 +184,62 @@
 @stop
 @section('page-script')
 <script>
-$(function() {
+    $(function() {
 
-  // We can attach the `fileselect` event to all file inputs on the page
-  $(document).on('change', ':file', function() {
-    var input = $(this),
-        numFiles = input.get(0).files ? input.get(0).files.length : 1,
-        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-    input.trigger('fileselect', [numFiles, label]);
-  });
+    // We can attach the `fileselect` event to all file inputs on the page
+    $(document).on('change', ':file', function() {
+        var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+    });
 
-  // We can watch for our custom `fileselect` event like this
-  $(document).ready( function() {
-      $(':file').on('fileselect', function(event, numFiles, label) {
+    // We can watch for our custom `fileselect` event like this
+    $(document).ready( function() {
+        $(':file').on('fileselect', function(event, numFiles, label) {
 
-          var input = $(this).parents('.input-group').find(':text'),
-              log = numFiles > 1 ? numFiles + ' files selected' : label;
+            var input = $(this).parents('.input-group').find(':text'),
+                log = numFiles > 1 ? numFiles + ' files selected' : label;
 
-          if( input.length ) {
-              input.val(log);
-          } else {
-              if( log ) alert(log);
-          }
+            if( input.length ) {
+                input.val(log);
+            } else {
+                if( log ) alert(log);
+            }
 
-      });
-  });
-  /*
-  $('#btnUpload').click(function(){
-     file = $('#fileUpload').val()
-     ext = file.substr(file.lastIndexOf('.')+1)
-     if(ext=='xlsx'){
-       $('#alert-div').addClass('hidden')   
-       formData = $('#frmUpload').serialize()
-        $.ajax({
-            type: 'get',
-            url: '/Ajax/UploadCollection/',
-            data: formData,
-            dataType: 'json',
-            success: function(data){
-                // success logic
-            },
-            error: function(data){
-                var errors = data.responseJSON;
-                console.log(errors);
-                // Render the errors with js ...
+        });
+    });
+    /*
+    $('#btnUpload').click(function(){
+        file = $('#fileUpload').val()
+        ext = file.substr(file.lastIndexOf('.')+1)
+        if(ext=='xlsx'){
+        $('#alert-div').addClass('hidden')   
+        formData = $('#frmUpload').serialize()
+            $.ajax({
+                type: 'get',
+                url: '/Ajax/UploadCollection/',
+                data: formData,
+                dataType: 'json',
+                success: function(data){
+                    // success logic
+                },
+                error: function(data){
+                    var errors = data.responseJSON;
+                    console.log(errors);
+                    // Render the errors with js ...
+            }
+            })
+        }else{
+            
+            $('#alert-div').removeClass('hidden')
         }
-        })
-     }else{
+        console.log(ext)
+            
         
-        $('#alert-div').removeClass('hidden')
-     }
-     console.log(ext)
-         
-     
-  })
-  */
-});
+    })
+    */
+    });
 
 </script>
 @stop

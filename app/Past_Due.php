@@ -19,6 +19,7 @@ class Past_Due extends Model
     ];
     public $data;
     public $insertValues;
+    public $total_due;
     public function get($obj){
         $this->data = $obj;
         $this->disbursement_id = $obj->disbursement_id;
@@ -27,7 +28,7 @@ class Past_Due extends Model
     }
     public function pastDueValues(){
         $insertValues=array();
-     
+        $total_due = 0;
         foreach($this->data->collection as $key=>$value){
             if(!$this->isOnLastWeek($value->amort_id)){
                 $insertValues[]=array(
@@ -40,11 +41,13 @@ class Past_Due extends Model
                     'week_to_be_paid' => $value->week + 1,
                     'to_be_collected_on' => $this->topUpOn($value->amort_id)
                 );
+            $total_due=$total_due+$value->past_due;
             }else{
                 //Insert to remaining balances outside loan_cycle
-                dd('lsdy week');
+               
             }
         }
+        $this->total_due = $total_due;
         $this->insertValues = $insertValues; 
         return $insertValues;
        

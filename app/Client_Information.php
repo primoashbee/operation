@@ -30,4 +30,13 @@ class Client_Information extends Model
     public function loans(){
         return $this->hasMany('App\Loans','client_id','id');
     }
+    public function hasNoCluster(){
+        //return $this->leftJoin('cluster_members as c2','c2.client_id','=','clients.id')->whereNotNull('c2.client_id')->toSql();
+        return \DB::table('clients')
+        ->whereNotIn('clients.id',
+        function($sql){
+             $sql->select('cluster_members.client_id')->from('cluster_members')
+            ->whereRaw('clients.id = cluster_members.client_id');
+        })->get();
+    }
 }

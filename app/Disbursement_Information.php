@@ -57,9 +57,10 @@ class Disbursement_Information extends Model
         return $this->hasMany('App\Amortization','disbursement_id')->where('collection_date','=',$today)->get();
     }
     public function getCollectionThisDaySet($today){
+     
         // $now = \Carbon\Carbon::now();
         // $today = $now->year .'-'.$now->month.'-'.$now->day;
-     
+        
         return $this->hasMany('App\Amortization','disbursement_id')->where('collection_date','=',$today)->get();
     }
     public function getLoanSummary($client_id){
@@ -80,8 +81,10 @@ class Disbursement_Information extends Model
             return $payments::where('disbursement_id','=',$id)->orderBy('created_at','DESC')->first()->collection_date;
         }
     }
+    /* 
     public function nextCollection(){
-        $id = $this->id;
+        $this->nCollect();
+       $id = $this->id;
         
         $code = $this->clusterInfo->code;
         $first_collection = $this->first_collection_date;
@@ -118,20 +121,30 @@ class Disbursement_Information extends Model
                 }else{
                     //$res = $amort->where('collection_date','>','2017-08-25')->where('collection_date','<=',$last_collection);
                     $res = $amort->where('collection_date','>',$this->lastCollection())->where('collection_date','<=',$last_collection);
-              
+                    dd($res);
                     return $res->first()->collection_date;
                 }
             }
         }
-        
+      
 
 
 
        // return $payments;
     }
+    */
+    public function nextCollection(){
+          return  $this->collectionDates()
+            ->where('collection_date','>',$this::find($this->id)->lastCollection())
+            ->first()->collection_date;            
+    }
     public function collectionDates(){
         $amort = new \App\Amortization;
-        $amort = $amort::select('collection_date')->whereNotNull('collection_date')->groupBy('collection_date')->orderBy('collection_date','asc')->get();
+        $amort = $amort::select('collection_date')->where('disbursement_id','=',$this->id)->whereNotNull('collection_date')->groupBy('collection_date')->orderBy('collection_date','asc')->get();
         return $amort;
+    }
+    public function totalPaid(){
+        $di = new \App\Payment_Summary;
+        return $di->where('disbursement_id','=',$this->id)->sum('amount_paid');
     }
 }

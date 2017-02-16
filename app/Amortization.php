@@ -44,7 +44,19 @@ class Amortization extends Model
     public function todayCCR($disbursement_id,$date){
         $amortz = $this->where('disbursement_id','=',$disbursement_id)->where('collection_date','=',$date)->get();
         $return=[];
+        $ctr = 0;
         foreach($amortz as $x){
+            if($x->pastDue()->total_amount==null){
+                $pastdue = 0;
+                $p_due_interest = 0;
+                $p_due_principal = 0;
+            }else{
+                $pastdue = $x->pastDue()->total_amount;
+                $p_due_interest = $x->pastdue()->interest;
+                $p_due_principal = $x->pastdue()->principal;
+            }
+            
+            $ctr++;
             $return[] = array(
                 'amort_id'=>$x->id,
                 'client_id'=>$x->client_id,
@@ -55,7 +67,13 @@ class Amortization extends Model
                 'collection_date'=>$x->collection_date,
                 'principal_this_week'=>$x->principal_this_week,
                 'interest_this_week'=>$x->interest_this_week,
-                'principal_with_interest'=>$x->principal_with_interest
+                'principal_with_interest'=>$x->principal_with_interest,
+                'past_due_interest' => $p_due_interest,
+                'past_due_principal'=> $p_due_principal,
+                'past_due'=>$pastdue,
+                'total_amount_due'=>$x->principal_with_interest + $pastdue,
+                'amount_paid'=>'',
+                'cbu'=>''
             );
         }
         return $return;
@@ -95,8 +113,28 @@ class Amortization extends Model
                 ->where('to_be_collected_on','=',$this->collection_date)
                 ->where('client_id','=',$this->client_id)
                 ->where('disbursement_id','=',$this->disbursement_id);
+                
         if($x->count() == 0){
-            return 0;
+            return $past_due;
+        }else{
+            return $x->first();
+        }
+    }
+    public function pastDueInformation(){
+        //return $this->join('past_dues','past_dues.week','=','amortization.week')->get();
+        //return $this->disbursement_id;
+        
+        $past_due = new \App\Past_Due;
+        $week = $this->week;
+        //return  "Select * from past_dues where to_be_collected_on = '".add_seven_days($this->collection_date)."' and client_id = '".$this->client_id."' and week_to_be_paid ='".$week."'";
+        $x = $past_due::
+                where('week_to_be_paid','=',$week)
+                ->where('to_be_collected_on','=',$this->collection_date)
+                ->where('client_id','=',$this->client_id)
+                ->where('disbursement_id','=',$this->disbursement_id);
+                
+        if($x->count() == 0){
+            return null;
         }else{
             return $x->first();
         }
