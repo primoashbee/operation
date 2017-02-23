@@ -24,16 +24,16 @@ class CollectionController extends Controller
     public function viewCollected($id){
         $collected = new \App\Payment_Information;
         $collected = $collected::where('payment_summary_id','=',$id)->get();
+        
         if(!$collected->count()> 0){
             return 'INVALID';
         }
-        foreach($collected as $key => $value ){
-            dd(array_keys((array)$value));
-
-            $key = array_keys((array)$value);
-            echo $key[0].'<br>';
-            //echo dd($value).'<br>';
-        }
+        $loans = new \App\Disbursement_Information;
+       
+        $loans = $loans::find($collected->first()->amortizationInfo()->disbursement_id);
+       
+        //dd($collected->first()->amortizationInfo());//->first()->disbursementInfo()
+        return view('pages.view-collected-per-payment-id',['collection'=>$collected,'loans'=>$loans]);
     }
     public function getCollectionValues($id,$date){
         
@@ -59,7 +59,7 @@ class CollectionController extends Controller
         $due = new \App\Amortization;
         $due = $due->todayCollectionByIdAndDate($id,$date);
         $collection = '';
-       
+        
         if(!env('dev_mode')){
             if($date != \Carbon\Carbon::now()->toDateString()){
                 $validator = ['Invalid Date'];
@@ -101,8 +101,9 @@ class CollectionController extends Controller
             }
      
         \Session::put('readFile',$readFile);
-        
-        return view('pages.collect-from-cluster',['due'=>$due,'date'=>$date,'dibursement_id'=>$id,'readFile'=>$readFile,'passed'=>true]);
+        $loans = new \App\Disbursement_Information;
+        $loans = $loans::find($id);
+        return view('pages.collect-from-cluster',['loans'=>$loans,'due'=>$due,'date'=>$date,'dibursement_id'=>$id,'readFile'=>$readFile,'passed'=>true]);
         //dd($request->all());
     }
     public function saveCollectionValues($id,$date){

@@ -69,8 +69,18 @@ namespace App\MyClass{
                     $errorBag[] = (object) array('msg'=>'AMOUNT PAID should be provided for Client: '.$row->client_name.' (See Row: '.$currentRow.' If no payment encode "0")' );
                 }elseif(!is_numeric($row->amount_paid)){
                     //amount paid is blank
-                    $errorBag[] = (object) array('msg'=>'AMOUNT PAID should be numeric for Client: '.$row->client_name.' (See Row: '.$currentRow.' )');  
+                    if(!is_int($amt)){
+                        $errorBag[] = (object) array('msg'=>'AMOUNT PAID should be numeric for Client: '.$row->client_name.' (See Row: '.$currentRow.' )');  
+                    }   
                 //}elseif(($row->cbu!==null && $row->cbu != 0 ) || $row->cbu < 50){
+                }elseif(is_numeric($row->amount_paid)){
+                    $amt  = (int) $row->amount_paid;
+                    if($amt < 0){
+                        
+                        $errorBag[] = (object) array('msg'=>'AMOUNT PAID should positive for Client: '.$row->client_name.' (See Row: '.$currentRow.' )');  
+                        
+                    }
+                 
                 }elseif(($row->cbu!==null && $row->cbu!=0 && $row->cbu < 50)){
                     
                     //amount paid is blank
@@ -176,7 +186,7 @@ namespace App\MyClass{
                     
                     $payment_summary->collection_date = $this->collection_date;
                     $payment_summary->amount_paid = $this->amount_paid;
-                    $payment_summary->uploader_id = $this->uploader_id;
+                    $payment_summary->uploader_id = \Auth::user()->id;
                     $payment_summary->principal_not_collected = $this->principal_not_collected;
                     $payment_summary->interest_not_collected = $this->interest_not_collected;
                     //$payment_summary->interest_amount_due = $this->interest_due;

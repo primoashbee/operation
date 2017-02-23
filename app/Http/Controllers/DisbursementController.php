@@ -32,6 +32,7 @@ class DisbursementController extends Controller
         return view('pages.cluster-disburse',['clients'=>$members,'cluster_id'=>$id,'weeks_to_pay'=>$mpl->weeks_to_pay]);
     }
     public function postDisbursement(Request $request, $id){
+        
         $loans = new Disbursement_Information();
         $loans = $loans::where('cluster_id','=',$id)->orderBy('created_at','desc');
         $product = new \App\Products;
@@ -120,6 +121,7 @@ class DisbursementController extends Controller
                         );
 
                     }
+                  
                     $amortizations->insert($amort);
 
             

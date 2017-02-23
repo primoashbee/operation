@@ -1,5 +1,5 @@
 <?php 
-function money_format($string){
+function pera_format($string){
     return "₱ ".number_format($string); 
 }
 function pesos($string){

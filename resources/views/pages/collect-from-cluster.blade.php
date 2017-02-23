@@ -81,7 +81,7 @@
             <!-- /.col-lg-12 -->
         </div>
         <div class="well clearfix">
-            
+           
             <h2 class="text-center"><b>Disbursement Information</b></h2>
             <div class="col-lg-4 col-md-4">
                 <h4>CV #: <b>{{$loans->cv_number}}</b></h4>

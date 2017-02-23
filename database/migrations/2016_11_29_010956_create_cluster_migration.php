@@ -24,6 +24,15 @@ class CreateClusterMigration extends Migration
             $table->timestamps();
         });
         
+        Schema::create('cluster_members', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('cluster_id')->unsigned()->nullable();
+            $table->integer('client_id')->unsigned()->nullable();  
+            $table->timeStamps();
+            $table->softDeletes();
+            //
+        });
+        
        
         
     }

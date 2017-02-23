@@ -69,6 +69,7 @@ class DownloadController extends Controller
                     //Payment
                     $sheet->cells('O2:O'.$row_count, function($cells) {
                         $cells->setBackground('#ffa500'); //orange
+                       
                     });
                     //CBU
                     $sheet->cells('P2:P'.$row_count, function($cells) {
@@ -77,7 +78,10 @@ class DownloadController extends Controller
                 
 
 
-                    
+                    $sheet->setColumnFormat(array(
+                        'O'=>'0',
+                        'P'=>'0'
+                    ));
                     $sheet->protect('ashbee');
                     $sheet->getProtection()->setSheet(true);
                     $sheet->getStyle('O2:P'.$row_count)->getProtection()->setLocked(\PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
@@ -193,5 +197,11 @@ class DownloadController extends Controller
         
             }
         }
+    }
+    public function paymentSummaryID($payment_summary_id){
+        $payment = new \App\Payment_Summary;
+
+        $payment::findOrFail($payment_summary_id);
+       
     }
 }

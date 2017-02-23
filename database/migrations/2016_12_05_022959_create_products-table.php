@@ -32,10 +32,11 @@ class CreateProductsTable extends Migration
             $table->increments('id');
             $table->string('name')->nullable();
             $table->string('interest_rate')->nullable();
-            $table->integer('weekly_compounding_rate')->nullable();
-            $table->integer('monthly_compounding_rate')->nullable();
             $table->bigInteger('min')->nullable();
             $table->bigInteger('max')->nullable();
+            $table->decimal('weekly_compounding_rate',20,6)->nullable();
+            
+
             $table->bigInteger('loan_term')->nullable();
             $table->bigInteger('weeks_to_pay')->nullable();
             $table->timestamps();

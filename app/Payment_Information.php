@@ -14,4 +14,19 @@ class Payment_Information extends Model
     public function paymentSummary(){
 
     }
+    public function amortizationInfo(){
+        $amort = new \App\Amortization;
+        
+        return $amort::find($this->amort_id);
+        
+        //return $this->belongsTo('App\Amortization','amort_id','amort_id');
+    }
+    public function lastWeekDue(){ 
+        return $this->amortizationInfo()->pastDue();
+        
+    }
+    public function weekDue(){
+        $amort = new \App\Amortization;
+        return $amort::find($this->amort_id);
+    }
 }

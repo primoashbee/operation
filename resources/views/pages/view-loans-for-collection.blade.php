@@ -69,7 +69,7 @@
                         <td>{{$x->lastCollection()}}</td>
                         <td>{{$x->nextCollection()}}</td>
                         <td><b>{{pesos($x->totalPaid())}}</b></td>
-                        <td><b>{{money_format($x->loan_amount)}}</b></td>
+                        <td><b>{{pesos($x->loan_amount)}}</b></td>
            
                         <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>
                         <td><a href="{{url()->current().'/'.$x->id.'/'.$x->nextCollection()}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>

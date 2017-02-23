@@ -96,13 +96,13 @@
                 @foreach($loans->loans()->get() as $x)
                     <tr>
                         <td>{{$x->clientInfo->firstname.' '.$x->clientInfo->lastname}}</td>
-                        <td>{{money_format($x->loan_amount)}}</td>
+                        <td>{{pesos($x->loan_amount)}}</td>
                         <td><button class="btn btn-sm btn-default view-amort" type="button" lookup-id="{{$x->loan_amount}}">View Amortization Schedule </button></td>
                     </tr>
                 @endforeach
                 <tr>
                     <td></td>
-                    <td>{{money_format($loans->loan_amount)}}</td>
+                    <td>{{pesos($loans->loan_amount)}}</td>
                     <td></td>
                 </tr>
             </tbody>
