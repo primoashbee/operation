@@ -30,7 +30,7 @@
         </div>
     <h1 class="text-center">Collection Summary</h1>
     <h3 > Week #:<b>{{$collection{0}->amortizationInfo()->week}}</b></h3>
-    <button class="btn btn-lg btn-default">Download Collection  <i class="fa fa-cloud-download" aria-hidden="true"></i></button>
+    <a href="\Downloads\Collected\{{$id}}"><button class="btn btn-lg btn-default">Download Collection  <i class="fa fa-cloud-download" aria-hidden="true"></i></button></a>
     <div class="">
     <table class="table table-striped">
     <thead>

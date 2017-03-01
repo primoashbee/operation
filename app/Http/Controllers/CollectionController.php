@@ -17,9 +17,13 @@ class CollectionController extends Controller
     }
     public function collectedIndex(){
         $summaries = new \App\Payment_Summary;
-        $summaries = $summaries::orderBy('collection_date','desc')->get();
-     
-        return view('pages.view-collected-summaries',['summaries'=>$summaries]);
+        $summaries = $summaries::orderBy('collection_date','desc')->paginate(50);
+        
+        if(\Request::get('search')===null){
+            return view('pages.view-collected-summaries',['summaries'=>$summaries]);
+        }else{
+            return view('pages.view-collected-summaries',['summaries'=>$summaries]);
+        }
     }
     public function viewCollected($id){
         $collected = new \App\Payment_Information;
@@ -33,7 +37,7 @@ class CollectionController extends Controller
         $loans = $loans::find($collected->first()->amortizationInfo()->disbursement_id);
        
         //dd($collected->first()->amortizationInfo());//->first()->disbursementInfo()
-        return view('pages.view-collected-per-payment-id',['collection'=>$collected,'loans'=>$loans]);
+        return view('pages.view-collected-per-payment-id',['collection'=>$collected,'loans'=>$loans,'id'=>$id]);
     }
     public function getCollectionValues($id,$date){
         
@@ -192,7 +196,7 @@ class CollectionController extends Controller
         $ti=0;
         $i_balance=0;
         $p_balance=0;
-        
+        $di = new \App\Disbursement_Information;
         foreach($collections as $x){
             $tp+=$x->principal_this_week;
             $ti+=$x->interest_this_week;
@@ -200,10 +204,9 @@ class CollectionController extends Controller
             $p_balance+=$x->principal_balance;
         }
         $projected = new \App\MyClass\Projected_Collection;
-        
         $projected->set($tp,$ti,$p_balance,$i_balance,$loans->loan_amount);
         
-        return view('pages.view-cluster-collection-per-day',['data'=>$collection,'loans'=>$loans,'projected'=>$projected,'disbursement_id'=>$disbursement_id]);
+        return view('pages.view-cluster-collection-per-day',['data'=>$collection,'di'=>$di,'loans'=>$loans,'projected'=>$projected,'disbursement_id'=>$disbursement_id]);
     }
     public function postCollectionValues(Request $request){
          $rules = ['fileUpload'=>'mimes:xlsx,xls | required'];

@@ -76,7 +76,7 @@
         <div class="col-lg-6 col-md-6">
             <form action = "{{url()->current().'\Schedule'}}" method="GET" id="form_filter">
                 
-                <select class="form-control" name="collection_date"  id="collection_date" >
+                <select class="form-control " name="collection_date"  id="collection_date" >
                         <option value=""> - </option>
                     @foreach($loans->getCollectionDates($loans->id) as $x)
                         <option value="{{$x->collection_date}}"> {{$x->collection_date}} | ({{day_name($x->collection_date)}})</option>
@@ -141,7 +141,7 @@ $('.view-amort').click(function(){
 
 function popuponclick(value)
 {
-my_window = window.open('http://localhost:8000/Api/Scheduling/'+value,
+my_window = window.open('/Api/Scheduling/'+value,
   "Schedule","status=1,width=1000px,height=500px");
 
 }

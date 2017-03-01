@@ -30,10 +30,9 @@
             </div>
             <!-- /.col-lg-12 -->
         </div>
-        <table class="table table-striped">
+        <table class="table table-striped" id="tblMain">
             <thead>
                 <th>Cluster Code</th>
-                <th>Disbursement Date</th>
                 <th>Previous Week Due</th>
                 <th>Amortization Due</th>
                 <th>This Week Due</th>
@@ -49,12 +48,11 @@
                 @foreach($summaries as $x)
                     <tr>
                         <td>{{$x->getDisbursement->clusterInfo->code}}</td>
-                        <td>{{$x->getDisbursement->release_date}}</td>
                         <td class="alert alert-danger">{{pesos($x->last_week_past_due)}}</td>
-                        <td class="alert alert-warning">{{pesos($x->this_week_due)}}</td>
-                        <td class="alert alert-success">{{pesos($x->this_week_total_amount_due)}}</td>
-                        <td>{{pesos($x->amount_paid)}}</td>
-                        <td class="alert alert-danger">{{pesos($x->interest_not_collected + $x->principal_not_collected)}}</td>
+                        <td class="">{{pesos($x->this_week_due)}}</td>
+                        <td class="{{$x->this_week_total_amount_due == $x->amount_paid ? 'alert alert-success' : 'alert alert-danger'}}">{{pesos($x->this_week_total_amount_due)}}</td>
+                        <td class="{{$x->this_week_total_amount_due == $x->amount_paid ? 'alert alert-success' : 'alert alert-danger'}}"> {{pesos($x->amount_paid)}}</td>
+                        <td class="{{$x->interest_not_collected + $x->principal_not_collected == 0 ? 'alert alert-success' : 'alert alert-danger'}}">{{pesos($x->interest_not_collected + $x->principal_not_collected)}}</td>
                         <td>{{$x->collection_date}}</td> 
                         
                         <td><a href="{{url()->current().'/'.$x->id}}" class="btn-icon"><button class="btn"><i class="fa fa-eye" aria-hidden="true"></i></button></a></td> 
@@ -64,12 +62,16 @@
 
             </tbody>
         </table>  
-        
+        {{$summaries->links()}}
         
        
     </div>
    
 @stop
 @section('page-script')
-
+<script>
+    $(function(){
+        $('#tblMain').DataTable();
+    })
+</script>
 @stop

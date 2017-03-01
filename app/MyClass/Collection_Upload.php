@@ -36,7 +36,7 @@ namespace App\MyClass{
             
             //dd($cbu->get($obj));
             $this->collection = $obj;
-          
+            
             $this->disbursement_id = $sheetname;
             $this->uploader_id = 1;
             
@@ -53,7 +53,6 @@ namespace App\MyClass{
             $settings = new \App\MyClass\Settings;
             $pfs = new \App\Payment_Information;
             foreach($obj as $row){
-                //dd($row);
                 
                 if($row->amort_id == '' || $row->amort_id === null){
                     //ammortization id is missing
@@ -126,40 +125,18 @@ namespace App\MyClass{
         public function computeData($obj){
             $count = $obj->count();
             for($x=0; $x<=$count-1;$x++){
-                //paid == total amount due
-                /*  
-                if($obj{$x}->amount_paid==$obj{$x}->total_amount_due){
-                    $interest = round((($obj{$x}->interest_this_week + $obj{$x}->past_due_interest)/ $obj{$x}->total_amount_due) * $obj{$x}->amount_paid);
-                  
-                  
-                   
-                    $principal = $obj{$x}->total_amount_due - $interest;
-                    $obj{$x}= array_add($obj{$x},'principal_paid',$principal);
-                    $obj{$x}= array_add($obj{$x},'interest_paid',$interest);
-                    $obj{$x}= array_add($obj{$x},'this_week_balance',$obj{$x}->total_amount_due - $obj{$x}->amount_paid);
-                    $obj{$x}= array_add($obj{$x},'week_interest_balance',($obj{$x}->interest_this_week + $obj{$x}->past_due_interest) - $interest);
-                    $obj{$x}= array_add($obj{$x},'week_principal_balance',($obj{$x}->principal_this_week  + $obj{$x}->past_due_principal)  - $principal);
-
-                }elseif($obj{$x}->amount_paid!=$obj{$x}->total_amount_due){
-                    $interest = round((($obj{$x}->interest_this_week + $obj{$x}->past_due_interest)/ $obj{$x}->total_amount_due) * $obj{$x}->amount_paid);
-                    
-                    $principal = $obj{$x}->total_amount_due - $interest;
-                     
-                    $obj{$x}= array_add($obj{$x},'principal_paid',$principal);
-                    $obj{$x}= array_add($obj{$x},'interest_paid',$interest);
-                    $obj{$x}= array_add($obj{$x},'this_week_balance',$obj{$x}->total_amount_due - $obj{$x}->amount_paid);
-                    $obj{$x}= array_add($obj{$x},'week_interest_balance',($obj{$x}->interest_this_week + $obj{$x}->past_due_interest) - $interest);
-                    $obj{$x}= array_add($obj{$x},'week_principal_balance',($obj{$x}->principal_this_week  + $obj{$x}->past_due_principal)  - $principal);
-                    
-                }
-                */
                 $interest_percentage = (($obj{$x}->interest_this_week + $obj{$x}->past_due_interest)/ $obj{$x}->total_amount_due);
                 $interest = round( $interest_percentage * $obj{$x}->amount_paid);
-                $principal = $obj{$x}->total_amount_due - $interest;
-                    
+                $principal = 0;
+                
+                if(!$interest==0){
+                    $principal = $obj{$x}->amount_paid - $interest;
+                }       
+                
                 $this_week_balance =  $obj{$x}->total_amount_due - $obj{$x}->amount_paid;
                 $week_interest_balance = round($interest_percentage * $this_week_balance);
                 $week_principal_balance = $this_week_balance - $week_interest_balance;
+                
                 $obj{$x}= array_add($obj{$x},'principal_paid',$principal);
                 $obj{$x}= array_add($obj{$x},'interest_paid',$interest);
                 $obj{$x}= array_add($obj{$x},'this_week_balance',$this_week_balance);
@@ -168,7 +145,7 @@ namespace App\MyClass{
                     
             }
             $this->collection = $obj;
-        
+            
         }
         public function save(){
              
@@ -212,7 +189,6 @@ namespace App\MyClass{
                     */
                    
                       
-                    
                     foreach($this->collection as $key => $value){
                         
                         $paymentSummaries[] = array(

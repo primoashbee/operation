@@ -49,9 +49,7 @@ namespace App\MyClass{
             $date=$this->first_collection_date;
             
             for($x=0;$x<=$weeks;$x++){
-                
                 $interest_this_week = round($compounding_rate * $p_balance);
-                
                 $principal_this_week = $cashflow - $interest_this_week;
                 if($x==0){
                      $table[]=(object) array(
@@ -66,9 +64,7 @@ namespace App\MyClass{
                             't_interest'=>0,
                             'collection_date'=>NULL
                         );
-              
                 }elseif($x==$weeks){
-                  
                     $interest_this_week = $this->interest_value - $i_total;
                     $principal_this_week = $this->loan - $p_total;
                     

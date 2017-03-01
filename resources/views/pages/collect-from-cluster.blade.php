@@ -106,7 +106,7 @@
             </div>
             
         </div>
-        
+        <h1> Collection Date: <b><i>{{$date}}</i></b> </h1>
         <table class="table table-striped">
             <thead>
                 <th>Client Name</th>
@@ -123,7 +123,7 @@
                         <td>{{$x->clientInfo->firstname.' '.$x->clientInfo->lastname}}</td>
                         <td>{{pesos(individual_total_loan($x->disbursement_id,$x->client_id)->loan_amount) }}</td>
                         <td>{{pesos($x->principal_with_interest)}}</td>                         
-                        <td class="alert alert-danger">{{pesos($x->pastDue()->total_amount)}}</td>
+                        <td class="{{$x->pastDue()->total_amount==0 ?'alert alert-success' : 'alert alert-danger'}}">{{pesos($x->pastDue()->total_amount)}}</td>
                         <td>{{pesos($x->pastDue()->total_amount+ $x->principal_with_interest)}}</td>
                         
                     </tr>

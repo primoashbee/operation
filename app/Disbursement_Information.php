@@ -97,7 +97,17 @@ class Disbursement_Information extends Model
         return $amort;
     }
     public function totalPaid(){
-        $di = new \App\Payment_Summary;
-        return $di->where('disbursement_id','=',$this->id)->sum('amount_paid');
+        $ps = new \App\Payment_Summary;
+        return $ps->where('disbursement_id','=',$this->id)->sum('amount_paid');
     }
+   
+    public function collectionIsPaid($collection_date){
+        $ps = new \App\Payment_Summary;
+        if($ps->where('disbursement_id','=',$this->id)->where('collection_date','=',$collection_date)->count() > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+ 
 }

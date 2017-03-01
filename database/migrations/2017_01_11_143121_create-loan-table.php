@@ -35,10 +35,7 @@ class CreateLoanTable extends Migration
             //
         });
         
-        Schema::create('amortizations', function (Blueprint $table) {
-            $table->increments('id');
-            //
-        });
+       
         
         
     }

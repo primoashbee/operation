@@ -31,7 +31,7 @@
             
             <!-- /.col-lg-12 -->
         </div>
-        <table class="table table-striped">
+        <table class="table table-striped" id="tblMain">
             <thead>
                 <th>Name</th>
                 <th>Branch</th>
@@ -60,5 +60,9 @@
    
 @stop
 @section('page-script')
-
+    <script>
+        $(function(){
+            $('#tblMain').DataTable();
+        })
+    </script>
 @stop

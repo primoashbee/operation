@@ -74,7 +74,7 @@
         <div class="col-lg-6 col-md-6">
             <form action = "{{url()->current()}}" method="GET" id="form_filter">
                     
-                <select class="form-control" name="collection_date"  id="collection_date" >
+                <select class="form-control " name="collection_date"  id="collection_date" >
                     @if(\Request::get('collection_date')==null)
                         <option value="">
                             -
@@ -88,7 +88,7 @@
                     </option>
                     @endif                        
                     @foreach($loans->getCollectionDates($loans->id) as $x)
-                        <option value="{{$x->collection_date}}"> {{$x->collection_date}} | ({{day_name($x->collection_date)}})</option>
+                        <option class="{{$di::find($disbursement_id)->collectionIsPaid($x->collection_date) == true ? 'alert alert-success' : 'alert alert-warning'}} "value="{{$x->collection_date}}"> {{$x->collection_date}} | ({{day_name($x->collection_date)}}) {{$di::find($disbursement_id)->collectionIsPaid($x->collection_date) == true ? 'PAID' : '-----'}}</option>
                     @endforeach
                     
                 </select>
@@ -120,11 +120,11 @@
                         <td>{{pesos($x->principal_this_week)}}</td>
                         <td>{{pesos($x->interest_this_week)}}</td>
                         
-                        <td class="alert alert-danger">{{pesos($x->pastDue()->total_amount)}}</td>
+                        <td class="{{$x->pastDue()->total_amount==0 ?'alert alert-success' : 'alert alert-danger'}}">{{pesos($x->pastDue()->total_amount)}}</td>
                         
                         <td>{{pesos($x->principal_with_interest+$x->pastDue()->total_amount)}}</td>
-                        <td>{{pesos($x->principal_balance)}}</td>
-                        <td>{{pesos($x->interest_balance)}}</td>
+                        <td>{{pesos($x->principal_balance + $x->pastDue()->principal)}}</td>
+                        <td>{{pesos($x->interest_balance+$x->pastDue()->interest)}}</td>
                     </tr>
                 @endforeach
 

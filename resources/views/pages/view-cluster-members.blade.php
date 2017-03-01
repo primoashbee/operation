@@ -41,7 +41,6 @@
                 <table class="table table-striped">
                 <thead>
                 <th>Name</th>
-                <th>Loan Cycle(s)</th>
                 <th>Address</th>
                 <th>Action</th>
                 </thead>
@@ -49,11 +48,11 @@
                     @foreach($members->all() as $x)
                         <tr>
                        
-                        <td>{{$x->name->lastname}}</td>
-                        <td>{{$x->name->cycle}}</td>
+                        <td>{{$x->name->firstname.' '.$x->name->lastname }}</td>
                         
                         <td>{{$x->name->home_address}}</td>
-                        <td><a href="/Cluster/{{$id}}/Members/Remove/{{$x->name->id}}"><button class="btn btn-sm btn-danger">Remove </button></a> </td>
+                        <td><a href="/Clients/Update/{{$x->name->id}}"><button class="btn btn-sm btn-success">Update Client Information </button></a> 
+                        <a href="/Cluster/{{$id}}/Members/Remove/{{$x->name->id}}"><button class="btn btn-sm btn-danger">Remove </button></a> </td>
                         </tr>
                     @endforeach
                 </tbody>

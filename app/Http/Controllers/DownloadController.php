@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 class DownloadController extends Controller
 {
     public function downloadCCRThisDay($d_id,$date){
+        $ps = new \App\Payment_Summary;
+        if($ps::where('disbursement_id','=',$d_id)->where('collection_date','=',$date)->count() > 0){
+            echo 'Already Collected For this Date <br>';
+            echo 'Click <a href="'.url()->previous().'"> Here </a> to go back';
+            return;  
+        }
         $data = new \App\Amortization;
         $data = $data->todayCCR($d_id,$date);
         
@@ -200,8 +206,39 @@ class DownloadController extends Controller
     }
     public function paymentSummaryID($payment_summary_id){
         $payment = new \App\Payment_Summary;
+        $payment=$payment::find($payment_summary_id);
+        if($payment===null){
+            echo 'wew';
+        }else{
+            $pi = new \App\Payment_Information;
+            $pi = $pi::where('payment_summary_id','=',$payment_summary_id)->get();
+            $date = $payment->colletion_date;
+            $title = 'Title Bes';
+            $download = new \App\MyClass\Download_Collected;
+            $download->set($payment_summary_id);
+            $data = new \App\MyClass\Download_Collected;
+            $data->set($payment_summary_id);
+            $report_data = $data->p_report;
+        
+            \Excel::create($title, function($excel) use ($report_data) {
+                
+                $excel->sheet('Payment', function($sheet) use ($report_data){  
 
-        $payment::findOrFail($payment_summary_id);
+                    $sheet->fromArray($report_data,null,'A1',true);
+                    $sheet->protect('ashbee');
+                    $sheet->getProtection()->setSheet(true);
+               
+
+                });
+
+                $excel->setCreator(env('Author'))->setCompany('LIGHT Microfinance Inc.');
+                $excel->setSubject('CCR Collection');
+                
+                
+            })->download('xlsx');
+
+
+        }
        
     }
 }

@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">Personal Information</h1>
-                <a href="\Clients"><i class="fa fa-long-arrow-left fa-3x" aria-hidden="true"> Back </i></a>
+                <a href="{{url()->previous()}}"><i class="fa fa-long-arrow-left fa-3x" aria-hidden="true"> Back </i></a>
 
             </div>
             <!-- /.col-lg-12 -->
