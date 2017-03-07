@@ -68,49 +68,125 @@
                 <input type="hidden" class="form-control" name="payee_id" id="payee_id" required> 
             </div>
         </div>
-     
+        
                 {{csrf_field()}}
-                <table class="table table-striped">
-                    <thead>
-                        <th>Name</th>
-                        <th style="">Loan Amount</th>
-                        <th style="text-align:center">Action</th>
-                    </thead>
-                    <tbody>
-                        @foreach($clients as $x)
-                            <tr >
-                                <td class="">
-                                    {{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}
-                                </td>
-                                <td>
-                                    <div class="input-group">
-                                        <input type="number" min="2000" max="99000" name="loan_amount[{{$x->name->id}}]" class="form-control loan-amount" data-id="{{$x->name->id}}">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-success view-amort" lookup-id="{{$x->name->id}}" type="button">View Amortization</button>
-                                        </span>
-                                        </div>
-                                    </div>
-                                    
-                                </td>
-                                <td style="text-align:center">
-                               
-                                    <div class="radio">
-                                        <label><input type="checkbox" class="reloan" name="reloan[{{$x->id}}]" p_id = "{{$x->id}} "p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" target-rdb="rdb{{$x->id}}"> Not re-loaning/loaning </label>
-                                        <label  id="rdb{{$x->id}}"><input type="radio" class="rdbPayee" name="payee_id" value="{{$x->client_id}}" p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" required>Mark As Payee</label>
-                                    </div>
-                                    
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="modal-footer">
-                
-                <button type="submit" class="btn btn-success"> Submit </button>
-                </div>
-       
+        <div class="clearfix"></div>
         {{$clients->links()}}
-    </div>
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Loan Information</a>
+                    </h4>
+                </div>
+                <div id="collapse1" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <th>Name</th>
+                                <th style="">Loan Amount</th>
+                                <th style="text-align:center">Action</th>
+                            </thead>
+                            <tbody>
+                                @foreach($clients as $x)
+                                    <tr >
+                                        <td class="">
+                                            {{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" min="2000" max="99000" name="loan_amount[{{$x->name->id}}]" class="form-control loan-amount" data-id="{{$x->name->id}}" required>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-success view-amort" lookup-id="{{$x->name->id}}" type="button">View Amortization</button>
+                                                </span>
+                                                </div>
+                                            </div>
+                                            
+                                        </td>
+                                        <td style="text-align:center">
+                                    
+                                            <div class="radio">
+                                                <label><input type="checkbox" class="reloan" name="reloan[{{$x->id}}]" p_id = "{{$x->id}} "p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" target-rdb="rdb{{$x->id}}"> Not re-loaning/loaning </label>
+                                                <label  id="rdb{{$x->id}}"><input type="radio" class="rdbPayee" name="payee_id" value="{{$x->client_id}}" p_name="{{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}" required>Mark As Payee</label>
+                                            </div>
+                                            
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Insurance Information</a>
+                    </h4>
+                </div>
+                <div id="collapse2" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <th style="width:30%">Name</th>
+                                <th style="width:30px">MI (CBLIC)</th>
+                                <th style="width:30px">MI (LMI FEE)</th>
+                                <th style="width:30px">MI Total</th>
+                                <th style="width:30px">CLI (CBLIC)</th>
+                                <th style="width:30px">CLI (LMI FEE)</th>
+                                <th style="width:45px">CLI Total</th>
+                            </thead>
+                            <tbody>
+                                @foreach($clients as $x)
+                                    <tr >
+                                        <td class="">
+                                            {{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}
+                                        </td>
+                                        <td>
+                                            <input type="number"  name="mi_premium_cblic[{{$x->name->id}}]" class="form-control loan-amount" id="mi_premium_cblic_{{$x->name->id}}" required >
+                                        </td>
+                                        <td>
+                                            <input type="number"  name="mi_premium_lmi[{{$x->name->id}}]" class="form-control loan-amount" id="mi_premium_lmi_{{$x->name->id}}" required readonly value="90">
+                                        </td>
+                                        <td> <span id="total_mi_{{$x->id}}"></span> ₱ 90.00 </td>
+                                        <td>
+                                            <input type="number"  name="cli_premium_cblic[{{$x->name->id}}]" class="form-control loan-amount" id="cli_premium_cblic_{{$x->name->id}}" required readonly>
+                                        </td>
+                                        <td>
+                                            <input type="number"  name="cli_premium_lmi[{{$x->name->id}}]" class="form-control loan-amount" id="cli_premium_lmi_{{$x->name->id}}"required readonly >
+                                        </td>
+                                        <td> <span id="total_cli_{{$x->name->id}}">₱ 0.00</span> </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Review</a>
+                    </h4>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse">
+                    <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+                </div>
+            </div>
+        </div>       
+        
+        
+        
+        <div class="modal-footer">
+        
+            <button type="submit" class="btn btn-success"> Submit </button>
+        </div>
+       
+        </div>
+                
 </form>  
 
 
@@ -190,11 +266,34 @@ $('.view-amort').click(function(){
  
 })
 
+$('.loan-amount').keyup(function(){
+    var amt = $(this).val()
+    var id = $(this).attr('data-id')
+    var cli_cblic = '#cli_premium_cblic_' + id
+    var cli_lmi = '#cli_premium_lmi_' + id
+    var total = '#total_cli_'+id
+    console.log(total)
+    $.ajax({
+        url:'/Api/Insurance/Compute',
+        data:{amt:amt},
+        type:'GET',
+        dataType:'JSON',
+        success:function(data){
+             $(cli_cblic).val(data.cblic_fee)
+             $(cli_lmi).val(data.lmi_fee)
+             $(total).html(data.total)
+   
+         }
+
+    });
+    
+})
+
 
 
 function popuponclick(value)
 {
-my_window = window.open('http://localhost:8000/Api/Scheduling/'+value,
+my_window = window.open('/Api/Scheduling/'+value,
   "Schedule","status=1,width=1000px,height=500px");
 
 }

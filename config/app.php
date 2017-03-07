@@ -181,6 +181,9 @@ return [
         //PHPExcel
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
+        //Laravel Scout
+        Laravel\Scout\ScoutServiceProvider::class,
+
         
     ],
 

@@ -9,9 +9,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header"> List of All Clients</h1>
-                <h2>Total Clients: <b>{{$clients->total()}}</b></h2>
+                <h2>Total Clients: <b></b></h2>
                 <div class="row">
-                <form action="\Clients" method="get">
+                <form action="{{url()->current()}}" method="get">
                     
                     <div class="row">
                         <div class="col-md-12 ">
@@ -33,30 +33,24 @@
         </div>
         <table class="table table-striped" id="tblMain">
             <thead>
-                <th>Name</th>
-                <th>Branch</th>
-                <th>Cluster</th>
-                <th>Mobile Number</th>
-                <th>Action</th>
+                <th>Client Name</th>
+                <th>CBU Deposited</th>
+                <th>Date</th>
+                <th>Week</th>
             </thead>
             <tbody>
-           
-                @foreach($clients as $x)
-                    <tr>
-                        <td>{{$x->lastname.', '.$x->firstname.', '.$x->middlename}}</td>
-                        <td>{{$x->branch()->first()==null ? 'Branch Code Error' : $x->branch()->first()->name}}</td>    
-                        <td>{{$x->cluster()->first()==null ? 'None' : $x->cluster()->first()->clusterInformation->code }}</td>
-                        <td>{{$x->mobile_number}}</td>
-                        <td>
-                        <a href="\Clients\Update\{{$x->id}}"><button class="btn btn-sm btn-default">Update Info</button></a>
-                        <a href="\Clients\Update\{{$x->id}}"><button class="btn btn-sm btn-default">Insurance Information</button></a>
-                        <a href="\Clients\Credit\{{$x->id}}"><button class="btn btn-sm btn-default">Credit Limit</button></a> 
-                        <button class="btn btn-sm btn-default">Delete</button>
-                    </tr>
-                @endforeach
+                @foreach($data as $x)
+                <tr>
+                        <td>{{$x->clientInfo()->firstname.' '.$x->clientInfo()->lastname}}</td>
+                        <td>{{pesos($x->amount)}}</td>
+                        <td>{{$x->paymentSummary()->getPaymentSummary()->created_at}}</td>
+                        <td>{{$x->paymentSummary()->amortizationInfo()->week}}</td>
+                        
+                </tr>
+                @endforeach 
             </tbody>
         </table>  
-        {{$clients->links()}}
+       
     </div>
    
 @stop

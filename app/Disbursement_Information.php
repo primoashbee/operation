@@ -82,6 +82,8 @@ class Disbursement_Information extends Model
         }
     }
     public function nextCollection(){
+
+
         if($this->lastCollection()=="None"){
             
             return $this->first_collection_date;
@@ -108,6 +110,13 @@ class Disbursement_Information extends Model
         }else{
             return false;
         }
+    }
+    public function cbuCollected(){
+        $cbu = new \App\CBU;
+        
+        $cbu = $cbu::where('disbursement_id','=',$this->id)->get();
+        $cbu = $cbu->sum('amount');
+        return $cbu;
     }
  
 }

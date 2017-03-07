@@ -1,9 +1,9 @@
-@extends('layouts.admin-layout')
+@extends('layouts.new')
 @section('content')
-<form method="post" id="myForm" action="/Cluster/Create">
-    <div style="margin-top:30px"></div>
-    
+<div class="right_col" role="main">
+    <div class="clearfix"></div> 
 
+    <form method="post" id="myForm" action="/Cluster/Create">
     <div id="step-1">
         
         <div class="row">
@@ -66,17 +66,19 @@
     </div>
         
     
-</form> 
+</form>  
+</div>
 @stop
 @section('page-script')
 <script>
 var curr = 0
- var branchTags = []
+var branchTags = []
 $(function(){
  
-  @foreach($branches as $x)
-    branchTags.push({ value:'{{$x->id}}',label:'{{$x->name}}' })
-  @endforeach
+    //foreach($branches as x)
+    //branchTags.push({ value:'$x->id',label:'$x->name' })
+    branchTags.push({ value:'1',label:'OLONGAPO' })
+  //endforeach
   
   $('#branch').autocomplete({
       source:branchTags,
@@ -90,3 +92,4 @@ $(function(){
 
 </script>
 @stop
+

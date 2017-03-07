@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Laravel\Scout\Searchable;
 use Illuminate\Http\Request;
 use Validator;
 use App\Client_Information;
 class ClientController extends Controller
 {
+    use Searchable;
     public function index(){
         $client = new Client_Information();;
         $client=$client::paginate(15);

@@ -51,4 +51,9 @@ class Payment_Information extends Model
         $interest = $ls->loan_amount*($prods->interest_rate * $prods->loan_term);
         return $interest;
     }
+    public function getPaymentSummary(){
+        $ps = new \App\Payment_Summary;
+        $ps = $ps::find($this->payment_summary_id);
+        return $ps;
+    }
 }

@@ -35,12 +35,21 @@ class CBU extends Model
         }
         
         $this->inserts=$data;
-    
         return $data;
     }
     public function getDisbursementId($amort_id){
         $amort = new \App\Amortization;
         $amort = $amort::find($amort_id);
         return $amort->disbursement_id;
+    }
+    public function clientInfo(){
+        $client = new \App\Client_Information;
+        return $client::find($this->client_id);
+    
+    }
+    public function paymentSummary(){
+        $pi = new \App\Payment_Information;
+        $pi = $pi::where('amort_id','=',$this->amort_id)->first();
+        return $pi;
     }
 }

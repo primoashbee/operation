@@ -1,14 +1,15 @@
-@extends('layouts.admin-layout')
+@extends('layouts.new')
 @section('content')
-<form method="post" id="myForm">
-    <div style="margin-top:30px"></div>
-    
-
-    <div id="step-1">
+        <!-- page content -->
+ 
+<form method="post" id="myForm">       
+  <div class="right_col" role="main">
+    <div class="clearfix"></div>  
+      <div id="step-1">
       
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Personal Information</h1>
+                <h1 class="page-header" style="color:#2a3f54"><b>Personal Information</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
@@ -23,11 +24,11 @@
                 </ul>
             </div>
         @endif
-            @if (session('status'))
-                <div class="alert alert-success">
-                   <h1> {{ session('status') }} </h1>
-                </div>
-            @endif
+        @if (session('status'))
+            <div class="alert alert-success">
+                <h1> {{ session('status') }} </h1>
+            </div>
+        @endif
        
             {{ csrf_field() }}
             <div class="row">
@@ -323,21 +324,21 @@
         
         
     </div>
-   
-</form> 
+  </div>
+</form>
+        <!-- /page content -->
 @stop
 @section('page-script')
 <script>
 var curr = 0
 $(function(){
-   
     $.each($('*[required]'),function(k,v){
           $(this).css('border-color','#337ab7')
           $(this).removeAttr('required')
         
     })
-    
-    
 })
 </script>
 @stop
+
+

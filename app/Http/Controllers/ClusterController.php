@@ -120,9 +120,7 @@ class ClusterController extends Controller
     public function preAddToCluster(){
         $client = new \App\Client_Information;
         $clients = $client::all();
-
-        return response()->json($clients);
-        
+        return response()->json($clients);        
     }
     public function postAddToCluster(Request $request,$id){
         $cluster = new \App\Cluster_Members;

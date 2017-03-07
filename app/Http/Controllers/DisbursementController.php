@@ -32,7 +32,12 @@ class DisbursementController extends Controller
         return view('pages.cluster-disburse',['clients'=>$members,'cluster_id'=>$id,'weeks_to_pay'=>$mpl->weeks_to_pay]);
     }
     public function postDisbursement(Request $request, $id){
-        
+        //dd($request->mi_premium_cblic);
+        foreach($request->mi_premium_cblic as $k => $v){
+            $id = $k;
+            echo $id.' = ' .$v.'<br>';
+        }
+        return;
         $loans = new Disbursement_Information();
         $loans = $loans::where('cluster_id','=',$id)->orderBy('created_at','desc');
         $product = new \App\Products;

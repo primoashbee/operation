@@ -77,7 +77,7 @@
                     @foreach($clients_to_add as $x)
                         <tr>
                         <td><input type="checkbox" name="client_id[]" value="{{$x->id}}"></td>
-                        <td>{{$x->lastname}}</td>
+                        <td>{{$x->firstname.' '.$x->lastname}}</td>
                         
                         <td>{{$x->home_address}}</td>
                         <td><a href="/Cluster/{{$id}}/Members/Add/{{$x->id}}"><button class="btn btn-sm btn-default">Update Cluster</button></a> <a href="/Cluster/{{$x->id}}/Members"><button class="btn btn-sm btn-default">Loans</button></a></td>

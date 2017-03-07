@@ -75,6 +75,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     Route::get('/Collected','CollectionController@collectedIndex');
     Route::get('/Collected/{id}','CollectionController@viewCollected');
+    Route::get('/Collected/Cbu/{id}','CBUController@byDisbursementID');
 
     //Route::get('/Loans/Application', 'LoanController@index');
 
@@ -103,6 +104,15 @@ Route::group(['middleware' => 'auth'], function() {
         }else{
             return response()->json(['code'=>1,'msg'=>$datesum,'day'=>$day]);        
         }
+    });
+    Route::get('/Api/Insurance/Compute',function(){
+        $amt = 0;
+        if(\Request::get('amt')){
+            $amt =   \Request::get('amt');
+        }
+        $insurance = new \App\LoanInsurance;
+        $data = $insurance->compute($amt);
+        return response()->json($data);
     });
     Route::get('/test',function(){
         $from = \Request::get('from');
@@ -138,4 +148,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/Upload','TestingController@preUpload');
     Route::post('/Upload','TestingController@postUpload');
    //
+});
+
+
+Route::get('/Testing',function(){
+    $cluster = new \App\Cluster_Information;
+    $cluster = $cluster::paginate(15);
+    return view('pages2.apply-loan',['clusters'=>$cluster]);
 });
