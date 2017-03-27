@@ -8,6 +8,14 @@ class DownloadController extends Controller
 {
     public function downloadCCRThisDay($d_id,$date){
         $ps = new \App\Payment_Summary;
+        $payment = new \App\Payment_Summary;
+        $payment = $payment::where('disbursement_id','=',$d_id);
+        $dif = new \App\Disbursement_Information;
+        $dif = $dif::find($d_id);
+        
+        if($dif->branchCode() != \Auth::user()->branch_code){
+            return 'cross downloading of documents';
+        }
         if($ps::where('disbursement_id','=',$d_id)->where('collection_date','=',$date)->count() > 0){
             echo 'Already Collected For this Date <br>';
             echo 'Click <a href="'.url()->previous().'"> Here </a> to go back';
@@ -50,11 +58,17 @@ class DownloadController extends Controller
                     $sheet->getColumnDimension('K')->setVisible(false);
                     $row_count = count($data)+1;
 
+
                     //principal + interest based on amortization
                     $sheet->cells('J2:J'.$row_count, function($cells) {
                         $cells->setBackground('#7d7de3');
-                    
+                        $cells->setBorder('A1', 'thin');
                     });
+
+                    $sheet->setBorder('M2:P'.$row_count, 'thin'); //Past Due To CBU
+                    $sheet->setBorder('J2:P'.$row_count, 'thin'); //amortization schedule
+                    
+                
                     //Payment
                     $sheet->cells('O2:O'.$row_count, function($cells) {
                         $cells->setBackground('#00B0F0');
@@ -63,7 +77,7 @@ class DownloadController extends Controller
 
                     //Past Due Total
                     $sheet->cells('M2:M'.$row_count, function($cells) {
-                        $cells->setBackground('#ff0000');
+                        $cells->setBackground('#d9534f');
                     });
 
 
@@ -88,11 +102,12 @@ class DownloadController extends Controller
                         'O'=>'0',
                         'P'=>'0'
                     ));
-                    $sheet->protect('ashbee');
+                    
                     $sheet->getProtection()->setSheet(true);
                     $sheet->getStyle('O2:P'.$row_count)->getProtection()->setLocked(\PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
                     $sheet->getStyle('P2:P'.$row_count)->getProtection()->setLocked(\PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
-
+                           
+                    
                 });
 
                 $excel->sheet('INSTRUCTIONS', function($sheet) use ($data){  
@@ -207,13 +222,21 @@ class DownloadController extends Controller
     public function paymentSummaryID($payment_summary_id){
         $payment = new \App\Payment_Summary;
         $payment=$payment::find($payment_summary_id);
+        if(!($payment->getDisbursement()->first()->clusterInfo()->first()->branch_id == $payment->auth->branch_code)){
+            return 'cross downloading of documents';
+        }
         if($payment===null){
             echo 'wew';
         }else{
             $pi = new \App\Payment_Information;
             $pi = $pi::where('payment_summary_id','=',$payment_summary_id)->get();
-            $date = $payment->colletion_date;
-            $title = 'Title Bes';
+
+
+            $cluster_code = $payment->getDisbursement()->first()->clusterInfo()->first()->code; 
+            $date = $payment->collection_date;
+            $time = $payment->created_at->format('g-i-s A');
+            //dd($payment->created_at->hour.'.'.$payment->created_at->minute.'.'.$payment->created_at->second.' '.$payment->created_at->minute);
+            $title = 'Collection Information for '.$cluster_code.' on '.$date.'(Uploaded on '.$payment->created_at->toDateString().' '.$time.')';
             $download = new \App\MyClass\Download_Collected;
             $download->set($payment_summary_id);
             $data = new \App\MyClass\Download_Collected;
@@ -223,7 +246,6 @@ class DownloadController extends Controller
             \Excel::create($title, function($excel) use ($report_data) {
                 
                 $excel->sheet('Payment', function($sheet) use ($report_data){  
-
                     $sheet->fromArray($report_data,null,'A1',true);
                     $sheet->protect('ashbee');
                     $sheet->getProtection()->setSheet(true);

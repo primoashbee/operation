@@ -14,7 +14,6 @@ class AccountController extends Controller
     public function login(Request $request){
        $accounts = new \App\Accounts;
        $res = $accounts->login($request->except('_token'));
-       
        if($res){
             return redirect('Clients');
        }else{
@@ -50,7 +49,8 @@ class AccountController extends Controller
         $accounts->username = $request->username;
         $accounts->password = $hashed_password;
         $accounts->branch_code =1;
-        $accounts->is_admin = 1;
+        $accounts->account_type ='branch_manager';
+        $accounts->is_admin = 0;
         if($accounts->save()){
             \Session::set('msg','Account Created Successful');
             return redirect()->back();

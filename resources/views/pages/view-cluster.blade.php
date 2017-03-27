@@ -34,7 +34,7 @@
         
             <td>{{$x->branch()->first()->name}}</td>
             <td>{{$x->code}}</td>
-            <td>{{$x->pa_lastname.' '.$x->pa_firstname.' '.$x->pa_middlename}}</td>
+            <td>{{$x->pa_firstname.' '.$x->pa_lastname}}</td>
             <td>{{$x->countMembers()}}</td>
             <td><a href="/Cluster/Update/{{$x->id}}"><button class="btn btn-sm btn-default">Update Cluster</button></a> <a href="/Cluster/{{$x->id}}/Members"><button class="btn btn-sm btn-default">Members Management</button></a></td>
             </tr>

@@ -20,7 +20,6 @@ class CreateClusterMigration extends Migration
             $table->string('region')->nullable();
             $table->string('pa_lastname')->nullable();
             $table->string('pa_firstname')->nullable();
-            $table->softDeletes();
             $table->timestamps();
         });
         
@@ -28,8 +27,7 @@ class CreateClusterMigration extends Migration
             $table->increments('id');
             $table->integer('cluster_id')->unsigned()->nullable();
             $table->integer('client_id')->unsigned()->nullable();  
-            $table->timeStamps();
-            $table->softDeletes();
+            $table->timestamps();
             //
         });
         

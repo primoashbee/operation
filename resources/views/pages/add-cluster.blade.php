@@ -33,15 +33,15 @@
                 <div class="col-md-8 col-lg-8">
                     <div class="form-group">
                     <label for="branch">Branch</label>
-                    <input type="text" class="form-control" id="branch" name ="branch" value ="{{ old('branch')}}" placeholder="Branch Name" required>
-                    <input type="hidden"  id="branch_id" name ="branch_id" value ="{{ old('branch_id')}}"  required>
+                    <input type="text" class="form-control" id="branch" name ="branch" value ="{{ getBranchById(whoIsLoggedIn()->branch_code)->name }}" readonly placeholder="Branch Name" >
+                    <input type="hidden"  id="branch_id" name ="branch_id" value ="{{\whoIsLoggedIn()->branch_code}}"  >
                     </div>
                 </div>
                 
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="code">Code</label>
-                    <input type="text" class="form-control" id="code" name ="code" value ="{{ old('code')}}" placeholder="Cluster code" required>
+                    <input type="text" class="form-control" id="code" name ="code" value ="{{generateClusterCode()}}" placeholder="Cluster code"  readonly>
                     </div>
                 </div>
                 
@@ -51,13 +51,13 @@
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="pa_lastname">Loan Officer's Lastname</label>
-                    <input type="text" class="form-control" id="pa_lastname" name ="pa_lastname" value ="{{ old('pa_lastname')}}" placeholder="lastname" required>
+                    <input type="text" class="form-control" id="pa_lastname" name ="pa_lastname" value ="{{ old('pa_lastname')}}" placeholder="lastname" >
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="pa_firstname">Loan Officer's Firstname</label>
-                    <input type="text" class="form-control" id="pa_firstname" name ="pa_firstname" value ="{{ old('pa_firstname')}}" placeholder="firstname" required>
+                    <input type="text" class="form-control" id="pa_firstname" name ="pa_firstname" value ="{{ old('pa_firstname')}}" placeholder="firstname" >
                     </div>
                 </div> 
                 

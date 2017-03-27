@@ -64,7 +64,7 @@
                         <td>{{$x->code}}</td>
                         <td>{{$x->totalMembers($x->id) }}</td>
                         <td><span class="label label-{{$x->status()=='On-Going Collection' ? 'danger' : 'success'}}">{{($x->status())}}</span></td>
-                        <td>{{$x->pa_firstname.' '.$x->pa_lastname}}</td>`
+                        <td>{{$x->pa_firstname.' '.$x->pa_lastname}}</td>
                         <td><a href="/Loans/Disbursement/{{$x->id}}" ><button class="btn btn-sm btn-success">Apply Loan</button></a>
                     </tr>
                 @endforeach

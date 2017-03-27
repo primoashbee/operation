@@ -15,6 +15,7 @@ class CreateClientsInfoTable extends Migration
     {
        Schema::create('clients', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('client_code')->unique();
             $table->string('lastname')->nullable();
             $table->string('firstname')->nullable();
             $table->string('middlename')->nullable();
@@ -25,6 +26,7 @@ class CreateClientsInfoTable extends Migration
             $table->string('spouse_name')->nullable();
             $table->string('TIN')->nullable();
             $table->string('birthday')->nullable();
+            $table->integer('age')->nullable();
             $table->string('home_address')->nullable();
             $table->string('home_year')->nullable();
             $table->string('business_address')->nullable();
@@ -35,6 +37,7 @@ class CreateClientsInfoTable extends Migration
             $table->string('sex')->nullable();
             $table->string('education')->nullable();
             $table->string('house_type')->nullable();
+            $table->string('img_src')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

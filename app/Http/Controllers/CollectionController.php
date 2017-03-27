@@ -16,6 +16,7 @@ class CollectionController extends Controller
         return view('pages.view-loans-for-collection',['clusters'=>$clusters,'today'=>$today]);
     }
     public function collectedIndex(){
+        
         $summaries = new \App\Payment_Summary;
         $summaries = $summaries::orderBy('collection_date','desc')->paginate(50);
         
@@ -26,17 +27,15 @@ class CollectionController extends Controller
         }
     }
     public function viewCollected($id){
+        //id here is payment summary id
         $collected = new \App\Payment_Information;
         $collected = $collected::where('payment_summary_id','=',$id)->get();
-        
-        if(!$collected->count()> 0){
+        if($collected->count() < 0){
             return 'INVALID';
         }
         $loans = new \App\Disbursement_Information;
-       
+        
         $loans = $loans::find($collected->first()->amortizationInfo()->disbursement_id);
-       
-        //dd($collected->first()->amortizationInfo());//->first()->disbursementInfo()
         return view('pages.view-collected-per-payment-id',['collection'=>$collected,'loans'=>$loans,'id'=>$id]);
     }
     public function getCollectionValues($id,$date){

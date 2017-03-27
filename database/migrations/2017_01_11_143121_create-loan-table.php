@@ -24,8 +24,11 @@ class CreateLoanTable extends Migration
             $table->integer('cbu_reloan')->unsigned()->nullable();
             $table->integer('processing_fee')->unsigned()->nullable();
             $table->integer('doc_stamp_tax')->unsigned()->nullable();
-            $table->integer('mi_premium')->unsigned()->nullable();
-            $table->integer('cli_premium')->unsigned()->nullable();
+            $table->integer('mi_id')->unsigned()->nullable();
+            $table->float('mi_premium_cblic')->unsigned()->nullable();
+            $table->float('mi_premium_lmi')->unsigned()->nullable();
+            $table->float('cli_premium_lmi')->unsigned()->nullable();
+            $table->float('cli_premium_cblic')->unsigned()->nullable();
             $table->integer('total_pre_deductions')->unsigned()->nullable();
             $table->integer('total_loan_amount')->unsigned()->nullable();
             $table->string('status')->nullable();

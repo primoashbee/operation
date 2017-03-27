@@ -1,3 +1,13 @@
+.photo-icon:hover {opacity: 0.7;}
+.th-sorter{
+  color:black;
+}
+
+  
+.photo-icon{
+  width: 50px;
+  height: 50px;
+}
 .ellipsis{
     max-width: 0;
     overflow: hidden;

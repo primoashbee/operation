@@ -1,6 +1,6 @@
 @extends('layouts.admin-layout')
 @section('content')
-<form method="post" id="myForm" action ="/Clients/Update/{{ $information->id }}">
+<form method="post" id="myForm" action ="/Clients/Update/{{ $information->id }}" enctype="multipart/form-data">
     {{method_field('patch')}}
     <div style="margin-top:30px"></div>
     
@@ -34,48 +34,70 @@
             @endif
        
             {{ csrf_field() }}
-            <div class="row">
-                <div class="col-md-4 col-lg-4">
+           <div class="row">
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail" style="height:100%;display:table">
+                    @if($information->sex=="Male")
+                        <img id="img_preview" alt="100%x200" data-src="holder.js/100%x200" style="height: 100%; width: 100%; display: block;" src="{{$information->img_src==null ? '/photo/clients/2x2-filler m.jpg' : $information->img_src}}" data-holder-rendered="true"> 
+                    @else
+                        <img id="img_preview" alt="100%x200" data-src="holder.js/100%x200" style="height: 100%; width: 100%; display: block;" src="{{$information->img_src==null ? '/photo/clients/2x2-filler f.jpg' : $information->img_src}}" data-holder-rendered="true"> 
+                   
+                    @endif
+                        <input type="file" class="form-control" id="img_src" value ="{{$information->img_src==null ? '/photo/clients/2x2-filler.jpg' : $information->img_src}}" name="img_src" />
+                   
+                    </div>
+                </div>
+            <h1> Client Code: <b>{{$information->client_code}}</b></h1>
+            
+                <div class="col-sm-6 col-md-4">
                     <div class="form-group">
                     <label for="lastname">Last Name</label>
                       
                     <input type="text" class="form-control" id="lastname" name ="lastname" value ="{{$information->lastname}}" required>
                     </div>
                 </div>
-                
-            
-                <div class="col-md-4 col-lg-4">
-                    <div class="form-group">
+                <div class="col-sm-6 col-md-4">
+                      <div class="form-group">
                     <label for="firstname">Firstname Name</label>
                     <input type="text" class="form-control" id="firstname" name ="firstname" value ="{{$information->firstname}}" required>
                     </div>
                 </div>
-                <div class="col-md-4 col-lg-4">
-                    <div class="form-group">
-                    <label for="middlename">Middle Name</label>
-                    <input type="text" class="form-control" id="middlename" name ="middlename" value ="{{$information->middlename}}" required>
+                <div class="col-sm-6 col-md-4">
+                     <div class="form-group">
+                        <label for="middlename">Middle Name</label>
+                        <input type="text" class="form-control" id="middlename" name ="middlename" value ="{{$information->middlename}}" required>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4 col-lg-4">
-                    <div class="form-group">
+                <div class="col-sm-6 col-md-4">
+                     <div class="form-group">
                     <label for="suffix">SUFFIX (ex. <i>JR, I, II, III</i>)</label>
                     <input type="text" class="form-control" id="suffix" name ="suffix" value ="{{$information->suffix}}">
                     </div>
                 </div>
-                
-                <div class="col-md-4 col-lg-4">
-                    <div class="form-group">
+                <div class="col-sm-6 col-md-4">
+                     <div class="form-group">
                     <label for="nickname">Nickname</label>
                     <input type="text" class="form-control" id="nickname" name ="nickname"  value ="{{$information->nickname}}"required >
                     </div>
                 </div>
-                <div class="col-md-4 col-lg-4">
-                    <div class="form-group">
+                <div class="col-sm-6 col-md-4">
+                      <div class="form-group">
                     <label for="mother_name">Mother Maiden Name</label>
                     <input type="text" class="form-control" id="mother_name" name ="mother_name" value ="{{$information->mother_name}}">
                     </div>
+                </div>
+            </div>
+           
+            <div class="row">
+                <div class="col-md-4 col-lg-4">
+                    
+                </div>
+                
+                <div class="col-md-4 col-lg-4">
+                    
+                </div>
+                <div class="col-md-4 col-lg-4">
+                   
                 </div>
             </div>
             <div class="row">
@@ -333,17 +355,29 @@
 <script>
 var curr = 0
 $(function(){
-    /*
-    $('#step-2').hide()
-    $('#step-3').hide()
-   */
+   /*
     $.each($('*[required]'),function(k,v){
           $(this).css('border-color','#337ab7')
           $(this).removeAttr('required')
         
     })
+    */  
     
-    
+    function readURL(input) {
+
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#img_preview').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+        $("#img_src").change(function(){
+            readURL(this);
+        });
 })
 /*
 $('.btn-back').click(function(){

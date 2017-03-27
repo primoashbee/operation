@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment_Summary extends Model
 {
     protected $table = 'payment_summaries';
+    public $auth;
 
     protected $fillable = [
         'disbursement_id',
@@ -20,8 +21,17 @@ class Payment_Summary extends Model
         'total_amount_due',
         'isFullyPaid',
     ];
+    
     protected $dates = ['created_at','updated_at'];
 
+
+    public function __construct(){
+        $this->auth  = null;
+        if(\Auth::check()){
+            $this->auth = \Auth::user();    
+        }
+
+    }
     public function getBreakdown(){
         return $this->hasMany('App\Payment_Informations','amort_id');
     }
@@ -32,4 +42,5 @@ class Payment_Summary extends Model
         $ps = new \App\Payment_Summary;
         return $ps::find($this->id)->orderBy('collection_date','desc')->first();
     }
+    
 }

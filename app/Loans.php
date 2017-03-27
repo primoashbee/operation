@@ -17,8 +17,11 @@ class Loans extends Model
         'cbu_reloan',
         'processing_fee',
         'doc_stamp_tax',
-        'mi_premium',
-        'cli_premium',
+        'mi_id',
+        'mi_premium_cblic',
+        'mi_premium_lmi',
+        'cli_premium_lmi',
+        'cli_premium_cblic',
         'total_pre_deductions',
         'total_loan_amount',
         'status',
@@ -43,5 +46,9 @@ class Loans extends Model
     }
     public function status(){
         return $this->status;
+    }
+    public function insuranceInformation(){
+        $insurance = new \App\InsuranceRates;
+        return $insurance::find($this->mi_id);
     }
 }

@@ -31,11 +31,19 @@
        
             {{ csrf_field() }}
             <div class="row">
+            
+             <div class="col-md-12 col-lg-12">
+                    <div class="form-group">
+                    <label for="client_code">Client Code</label>
+                    
+                    <input type="text" class="form-control" id="client_code" value ="{{generateClientCode()}}" name ="client_code" readonly>
+                    </div>
+            </div>
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="lastname">Last Name</label>
                       
-                    <input type="text" class="form-control" id="lastname" name ="lastname" value ="{{ old('lastname')}}" required>
+                    <input type="text" class="form-control" id="lastname" name ="lastname" value ="{{ old('lastname')}}" >
                     </div>
                 </div>
                 
@@ -43,13 +51,13 @@
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="firstname">Firstname Name</label>
-                    <input type="text" class="form-control" id="firstname" name ="firstname" value ="{{ old('firstname')}}" required>
+                    <input type="text" class="form-control" id="firstname" name ="firstname" value ="{{ old('firstname')}}" >
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-4">
-                    <div class="form-group">
+                    <div class="form-group">                
                     <label for="middlename">Middle Name</label>
-                    <input type="text" class="form-control" id="middlename" name ="middlename" value ="{{ old('middlename')}}" required>
+                    <input type="text" class="form-control" id="middlename" name ="middlename" value ="{{ old('middlename')}}" >
                     </div>
                 </div>
             </div>
@@ -64,7 +72,7 @@
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="nickname">Nickname</label>
-                    <input type="text" class="form-control" id="nickname" name ="nickname"  value ="{{ old('nickname')}}"required >
+                    <input type="text" class="form-control" id="nickname" name ="nickname"  value ="{{ old('nickname')}}" >
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-4">
@@ -90,7 +98,7 @@
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="birthday">Birthday </label>
-                    <input type="date" class="form-control" id="birthday" name ="birthday" value ="{{ old('birthday')}}"required>
+                    <input type="date" class="form-control" id="birthday" name ="birthday" value ="{{ old('birthday')}}">
                     </div>
                 </div>
 
@@ -99,13 +107,13 @@
                 <div class="col-md-8 col-lg-8">
                     <div class="form-group">
                     <label for="home_address">Home Address</label>
-                    <input type="text" class="form-control" id="home_address" name ="home_address" value ="{{ old('home_address')}}" required>
+                    <input type="text" class="form-control" id="home_address" name ="home_address" value ="{{ old('home_address')}}" >
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="home_year">Home Address Corresponding Year </label>
-                    <input type="text" class="form-control" id="home_year" name ="home_year"  value ="{{ old('home_year')}}"required>
+                    <input type="text" class="form-control" id="home_year" name ="home_year"  value ="{{ old('home_year')}}">
                     </div>
                 </div>
             </div>
@@ -127,7 +135,7 @@
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="mobile_number">Mobile Number (ex.<i>0923-456-7890</i>)</label>
-                    <input type="text" class="form-control" id="mobile_number" name ="mobile_number" value ="{{ old('mobile_number')}}" required>
+                    <input type="text" class="form-control" id="mobile_number" name ="mobile_number" value ="{{ old('mobile_number')}}" >
                     </div>
                 </div>
                 <div class="col-md-3 col-lg-3">
@@ -139,7 +147,7 @@
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="civil_status">Civil Status </label>
-                    <select type="text" class="form-control" id="civil_status" name ="civil_status" required>
+                    <select type="text" class="form-control" id="civil_status" name ="civil_status" >
                         <option value="{{old('civil_status')}}">{{ old('lastname') }}</option>
                         <option value="Single">Single</option>
                         <option value="Married">Married</option>
@@ -151,7 +159,7 @@
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="sex">Sex</label>
-                    <select type="text" class="form-control" id="sex" name ="sex" required>
+                    <select type="text" class="form-control" id="sex" name ="sex" >
                         <option value="{{old('sex')}}">{{ old('sex') }}</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
@@ -178,7 +186,7 @@
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                         <label for="house_type">House</label>
-                    <select type="text" class="form-control" id="house_type" name ="house_type" required>
+                    <select type="text" class="form-control" id="house_type" name ="house_type" >
                             <option value="{{old('house_type')}}">{{ old('house_type') }}</option>
                             <option value="Owned">Owned</option>
                             <option value="Rented">Rented</option>
@@ -200,31 +208,31 @@
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="member_lastname">Member Last Name</label>
-                    <input type="text" class="form-control" id="member_lastname" name ="member_lastname" value ="{{old('member_lastname')}}" required>
+                    <input type="text" class="form-control" id="member_lastname" name ="member_lastname" value ="{{old('member_lastname')}}" >
                     </div>
                 </div>
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="member_firstname">Member First Name</label>
-                    <input type="text" class="form-control" id="member_firstname" name ="member_firstname"  value ="{{old('member_firstname')}}" required>
+                    <input type="text" class="form-control" id="member_firstname" name ="member_firstname"  value ="{{old('member_firstname')}}" >
                     </div>
                 </div>
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="member_middlename">Member Middle Name</label>
-                    <input type="text" class="form-control" id="member_middlename" name ="member_middlename"  value ="{{old('member_middlename')}}" required>
+                    <input type="text" class="form-control" id="member_middlename" name ="member_middlename"  value ="{{old('member_middlename')}}" >
                     </div>
                 </div> 
                 <div class="col-md-1 col-lg-1">
                     <div class="form-group">
                     <label for="member_age">Age</label>
-                    <input type="number" class="form-control" id="member_age" name ="member_age"  value ="{{old('member_age')}}" style="width:70px" required>
+                    <input type="number" class="form-control" id="member_age" name ="member_age"  value ="{{old('member_age')}}" style="width:70px" >
                     </div>
                 </div> 
                 <div class="col-md-2 col-lg-2">
                     <div class="form-group">
                     <label for="member_suffix">SUFFIX</label>
-                    <input type="text" class="form-control" id="member_suffix" name ="member_suffix"  value ="{{old('member_suffix')}}" style="width:50px" required>
+                    <input type="text" class="form-control" id="member_suffix" name ="member_suffix"  value ="{{old('member_suffix')}}" style="width:50px" >
                     </div>
                 </div>
             </div>
@@ -233,13 +241,13 @@
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="member_relationship">Relationship to Client</label>
-                    <input type="text" class="form-control" id="member_relationship" name ="member_relationship"  value ="{{old('member_relationship')}}" required>
+                    <input type="text" class="form-control" id="member_relationship" name ="member_relationship"  value ="{{old('member_relationship')}}" >
                     </div>
                 </div>
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="member_occupation">Occupation</label>
-                    <input type="text" class="form-control" id="member_occupation" name ="member_occupation"  value ="{{old('member_occupation')}}"required>
+                    <input type="text" class="form-control" id="member_occupation" name ="member_occupation"  value ="{{old('member_occupation')}}">
                     </div>
                 </div>
                 <div class="col-md-3 col-lg-3">
@@ -253,13 +261,13 @@
                 <div class="col-md-3 col-lg-3">
                     <div class="form-group">
                     <label for="member_monthly_income">Monthly Income (Php)</label>
-                    <input type="number" class="form-control" id="member_monthly_income" name ="member_monthly_income"  value ="{{old('member_monthly_income')}}"required>
+                    <input type="number" class="form-control" id="member_monthly_income" name ="member_monthly_income"  value ="{{old('member_monthly_income')}}">
                     </div>
                 </div>
                 <div class="col-md-9 col-lg-9">
                     <div class="form-group">
                     <label for="member_address">Address</label>
-                    <textarea id="member_address" name = "member_address"  value ="{{old('member_address')}}" class="form-control" width="3" row="3" style="margin: 0px -485.556px 0px 0px; width: 759px; height: 75px;" required></textarea>
+                    <textarea id="member_address" name = "member_address"  value ="{{old('member_address')}}" class="form-control" width="3" row="3" style="margin: 0px -485.556px 0px 0px; width: 759px; height: 75px;" >{{old('member_address')}}</textarea>
                   
                     </div>
                 </div>  
@@ -277,13 +285,13 @@
                 <div class="col-md-6 col-lg-6">
                     <div class="form-group">
                         <label for="main_business">Main Business</label>
-                        <input type="text" class="form-control" id="main_business" name="main_business"  value ="{{old('main_business')}}" required>
+                        <input type="text" class="form-control" id="main_business" name="main_business"  value ="{{old('main_business')}}" >
                     </div>
                 </div>
                 <div class="col-md-2 col-lg-2">
                     <div class="form-group">
                         <label for="main_business_years">Years in Business</label>
-                        <input type="text" class="form-control" id="main_business_years" name="main_business_years"  value ="{{old('main_business_years')}}" required>
+                        <input type="text" class="form-control" id="main_business_years" name="main_business_years"  value ="{{old('main_business_years')}}" >
                     </div>
                 </div>
                 <div class="col-md-4 col-lg-4">
@@ -330,13 +338,13 @@
 <script>
 var curr = 0
 $(function(){
-   
-    $.each($('*[required]'),function(k,v){
+  /* 
+    $.each($('*[]'),function(k,v){
           $(this).css('border-color','#337ab7')
-          $(this).removeAttr('required')
+          $(this).removeAttr('')
         
     })
-    
+    */
     
 })
 </script>

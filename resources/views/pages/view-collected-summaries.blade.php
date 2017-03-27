@@ -45,7 +45,9 @@
             </thead>
             
             <tbody>
+            <?php $ctr=0;?>
                 @foreach($summaries as $x)
+                    <?php  $ctr+=$x->this_week_due ?>
                     <tr>
                         <td>{{$x->getDisbursement->clusterInfo->code}}</td>
                         <td class="alert alert-danger">{{pesos($x->last_week_past_due)}}</td>
@@ -63,8 +65,8 @@
             </tbody>
         </table>  
         {{$summaries->links()}}
-        
        
+       {{$ctr}}
     </div>
    
 @stop

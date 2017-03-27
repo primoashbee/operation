@@ -17,3 +17,7 @@ elixir((mix) => {
     mix.sass('app.scss')
        .webpack('app.js');
 });
+var bower_path = './bower_components';
+var js_path = 'public/js';
+
+mix.copy(bower_path + '/sweetalert/dist/sweetalert-dev.js', js_path);

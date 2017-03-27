@@ -14,8 +14,12 @@ class DisbursementController extends Controller
         $clusters = new \App\Cluster_Information();
         $cluster = $clusters::find($id);
         //check if cluster has on going transaction;
-        if($cluster->totalMembers($id)==0){
+        if($cluster->countMembers()==0){
             return redirect('/Loans/Application')->with('status',['code'=>0,'msg'=>'This cluster ['.$cluster->code.'] has ZERO MEMBERS']);
+        }elseif($cluster->countMembers() < 10){
+            return redirect('/Loans/Application')->with('status',['code'=>0,'msg'=>'This cluster ['.$cluster->code.'] has less than 10 members ( 10 - 20 members only )']);
+        }elseif($cluster->countMembers() > 20){
+            return redirect('/Loans/Application')->with('status',['code'=>0,'msg'=>'This cluster ['.$cluster->code.'] has more than 20 members ( 10 - 20 members only )']);
         }
         if($loans==null){
         }else{
@@ -29,16 +33,36 @@ class DisbursementController extends Controller
        
         $products = new \App\Products;
         $mpl = $products::first();
-        return view('pages.cluster-disburse',['clients'=>$members,'cluster_id'=>$id,'weeks_to_pay'=>$mpl->weeks_to_pay]);
+        $insurance = new \App\InsuranceRates;
+        $insurance = $insurance::all(); 
+        
+        return view('pages.cluster-disburse',['clients'=>$members,'cluster_id'=>$id,'weeks_to_pay'=>$mpl->weeks_to_pay,'insurance'=>$insurance]);
     }
     public function postDisbursement(Request $request, $id){
         //dd($request->mi_premium_cblic);
-        foreach($request->mi_premium_cblic as $k => $v){
-            $id = $k;
-            echo $id.' = ' .$v.'<br>';
-        }
-        return;
         $loans = new Disbursement_Information();
+        $errorBag= array();
+        foreach($request->loan_amount as $k => $v){
+           
+            if(!($v >= 2000 &&  $v<= 99000)){
+                $errorBag[] =  array('Input should be less than 99,000 or greater than 2,000 ('.$v.')');    
+            }elseif($v % 1000 != 0){
+                $errorBag[] =  array($v.' is not divisible by 1000') ;
+            }
+        }
+        if($loans::where('cv_number','=',$request->cv_number)->count() > 0){
+             $errorBag[] =  array('Check Voucher Number Already Been Used ['.$request->cv_number.']'); 
+        }elseif($loans::where('check_number','=',$request->check_number)->count() > 0){
+             $errorBag[] =  array('Check Number Already Been Used ['.$request->check_number.']'); 
+        }
+
+
+        if(count($errorBag) > 0){
+            return back()->withErrors($errorBag);
+        }
+
+     
+      
         $loans = $loans::where('cluster_id','=',$id)->orderBy('created_at','desc');
         $product = new \App\Products;
         $mpl = $product::first();
@@ -67,15 +91,16 @@ class DisbursementController extends Controller
 
             }
         }
-       
+   
         //add associative arrays in input variable
         $input = array_add($input,'loan_amount',$total_loan);
         $input = array_add($input,'is_finished',false);
         $input = array_add($input,'status','on-going');
+     
         $loans = new Disbursement_Information();
        
-        //dd($input); 
-    
+        //dd($request->cli_premium_cblic[12]); 
+        
         $disbursement_id=$loans->create($input);
         
 
@@ -84,8 +109,17 @@ class DisbursementController extends Controller
         $process_fee = 0.015;
         $loan_summaries = new \App\Loans;
 
+        $mi = new \App\InsuranceRates;
+        
         foreach($request->loan_amount as $key => $value){
             //if id contains inside checked boxes on not to reloan/loan
+            //dd($request->cli_premium_cblic[$key]);
+            //dd($mi = $mi::find($key));  
+            $mi_id = $request->mi[$key];
+            $mi = $mi::find($mi_id);
+            $insurance = new \App\LoanInsurance;
+            $cli = $insurance->compute($value);
+            
             if(!array_has($request->reloan, $key)){
                 $total_loan+=$value;
                 $loan_input=array(
@@ -97,8 +131,11 @@ class DisbursementController extends Controller
                     'cbu_reloan'=>0,
                     'processing_fee'=>$process_fee*$value,
                     'doc_stamp_tax'=>0,
-                    'mi_premium'=>0,
-                    'cli_premium'=>0,
+                    'mi_id'=>$mi_id,
+                    'mi_premium_cblic'=>$mi->total,
+                    'mi_premium_lmi'=>$mi->mi_fee,
+                    'cli_premium_cblic'=>$cli['cblic_fee'],
+                    'cli_premium_lmi'=>$cli['lmi_fee'],
                     'total_pre_deductions'=>0,
                     'total_loan_amount'=>0,
                     'status'=>'on-going',
@@ -111,7 +148,7 @@ class DisbursementController extends Controller
                     $table = create_amortization($value,$product->interest_rate,$product->loan_term,$product->weeks_to_pay,$product->weekly_compounding_rate,$first_collection_date);
                     $amort = [];
                     $amortizations = new \App\Amortization;
-                    //
+                    
                     foreach($table->table as $data){
                         $amort[] = array(
                             'disbursement_id' => $disbursement_id->id,
@@ -138,5 +175,47 @@ class DisbursementController extends Controller
        
      
     }
-    
+    public function deleteDisbursement($id){
+        $di = new Disbursement_Information();
+        $di = $di::find($id);
+        /*if(!$di==null){
+        if($di->hasStartedCollecting()){
+                return 'Nag collect na bes';
+        }
+        */
+        $am = new \App\Amortization; //Amortizations
+        $loans = new \App\Loans; //Loan Summaires
+        $pi = new \App\Payment_Information;
+        $ps = new \App\Payment_Summary;
+        /*
+        $dAm = $am::where('disbursement_id','=',$id)->delete();
+        $dLoans = $loans::where('disbursement_id','=',$id)->delete();
+        */
+
+
+        //$amort_ids = $am::select('id')->where('disbursement_id','=',$id)->get()->toArray(); //Amortization ids
+        return $am::where('disbursement_id','=',$id)->delete(); //Amortization ids
+        
+        dd($am::destroy($amort_ids));
+        
+        foreach($amort_ids as $x){
+            dd($pi::where('amort_id','=',$x->id)->get()->first());
+            $ps_ids[] = $pi::where('amort_id','=',$x->id)->first()->id;
+        }
+        dd($ps_ids);
+        /*dd($pi::where('amort_id','=',$ps_ids)->get());
+        $pi::find($ps_ids);
+        $res = $pi->destroy();
+        dd($res);
+       return 'pwede bes';
+        */
+    /*   }else{
+           return 'model error';
+       }
+       
+       
+
+
+     */  
+    }
 }

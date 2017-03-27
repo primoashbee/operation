@@ -8,9 +8,22 @@ use App\Client_Information;
 class ClientController extends Controller
 {
     use Searchable;
+    public $table;
     public function index(){
-        $client = new Client_Information();;
-        $client=$client::paginate(15);
+        $client = new Client_Information();
+
+        $filter = \Request::get('filter');
+        $key = \Request::get('search');
+        
+        if($filter !=NULL && $key !=NULL){
+            if($filter=="sex"){
+                $client=$client::where('branch_id','=',\Auth::user()->branch_code)->where($filter,'=',$key)->orderBy('id','asc')->paginate(50);        
+            }else{
+                $client=$client::where('branch_id','=',\Auth::user()->branch_code)->where($filter,'like','%'.$key.'%')->orderBy('id','asc')->paginate(50);        
+            }
+        }else{
+            $client=$client::where('branch_id','=',\Auth::user()->branch_code)->orderBy('id','asc')->paginate(100);
+        }
         return view('pages.view-all-client',['clients'=>$client]);      
     }    
     public function preCreateClient(){
@@ -19,11 +32,22 @@ class ClientController extends Controller
     }    
     public function postCreateClient(Request $request){
        $client = new Client_Information();
-      // dd($request->all());
-        $rules =[
+       $request->request->add(['branch_id'=>whoIsLoggedIn()->branch_code]);
+       $request->request->add(['age'=>getAge($request->birthday)]);
+         $clients = new \App\Client_Information;
+        if($client::where('lastname','like','%'.$request->lastname.'%')->where('firstname','like','%'.$request->firstname.'%')->where('birthday','like','%'.$request->birthday.'%')->count() > 0){
+            $client = $client::where('lastname','like','%'.$request->lastname.'%')->where('firstname','like','%'.$request->firstname.'%')->where('birthday','like','%'.$request->birthday.'%')->get();
+            $msg = "Client already registered at ".$client->first()->branch()->name." ";;
+
+            return redirect('/Clients/Create')
+            ->withErrors(['Record Existing',$msg])
+            ->withInput();
+        }
+       $rules =[
             'lastname'=>'required',
             'firstname'=>'required',
             'middlename'=>'required',
+            'client_code'=>'required|unique:clients',
             'TIN'=>'numeric',
             'nickname'=>'required',
             'birthday'=>'required',
@@ -42,13 +66,14 @@ class ClientController extends Controller
             'member_address'=>'required',
             'main_business'=>'required',
             'main_business_years'=>'required',
-
+            'branch_id'=>'required'
         ];
 
         $messages =[
             'lastname.required' => 'Please enter lastname',
             'firstname.required'=>'Please enter firstname',
             'middlename.required'=>'Please enter middlename',
+            'client_code.unique'=>'Existing Client Code',
             'nickname.required'=>'Please enter nickname',
             'birthday.required'=>'Please enter birthday',
             'home_address.required'=>'Please enter Address of Client',
@@ -68,17 +93,30 @@ class ClientController extends Controller
             'member_address.required'=>'Please Enter household members address',
             'main_business.required'=>'Please Enter Main business',
             'main_business_years.required'=>'Please Enter Business Years',
+            'branch_id.required'=>'Authentication Error'
         ];
         
+        $clients = new \App\Client_Information;
+        if($client::where('lastname','like','%'.$request->lastname.'%')->where('firstname','like','%'.$request->firstname.'%')->where('birthday','like','%'.$request->birthday.'%')->count() > 0){
+            $client = $client::where('lastname','like','%'.$request->lastname.'%')->where('firstname','like','%'.$request->firstname.'%')->where('birthday','like','%'.$request->birthday.'%')->get();
+            dd($client);
+            return redirect('/Clients/Create')
+            ->withErrors(['Record Existing','Se'])
+            ->withInput();
+        }
         $validator =Validator::make($request->all(),$rules,$messages);
         if($validator->fails()){
             return redirect('/Clients/Create')
             ->withErrors($validator)
             ->withInput();
         }
+
+      
+       
        $client=$client::create($request->all());
+       
        $client_id=$client->id;
-    
+      
        $values = array_add($request->all(), 'client_id', $client_id);
        
        $client->business()->create($values);
@@ -94,6 +132,8 @@ class ClientController extends Controller
 
     } 
     public function updateClient(Request $request,$id){
+      
+        //$file->move($path,$file);
         $rules =[
            'lastname'=>'required',
            'firstname'=>'required',
@@ -148,11 +188,24 @@ class ClientController extends Controller
             ->withErrors($validator)
             ->withInput();
         }
+       
         $client = new Client_Information();
         $client= $client::find($id);
-        $client->update($request->all());
+        $path = '\photo\clients\\';
+        $path = public_path().$path;
+        $filename  = $client->client_code.'.jpg';
+        $input = $request->all();
+        if($request->hasFile('img_src')){
+            $file = $request->file('img_src')->move($path,$filename);
+            $new_input = $request->except('img_src');
+            $input = array_add($new_input,'img_src','\photo\clients\\'.$filename); 
+        
+        }
+        $client->update($input);
         $client->income->update($request->all());
         $client->business->update($request->all());
+        
+        
           return redirect('/Clients/Update/'.$id)
                     ->with('status','Client Updated');
         

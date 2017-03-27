@@ -44,7 +44,8 @@
                         <!--<td>@{{$x->lastname.', '.$x->firstname.', '.$x->middlename}}</td>-->
                         <!--<td>@{{$x->branch_id}}</td>-->
                         <!--<td>@{{$x->mobile_number}}</td>-->
-                        <td><a href="\Cluster\Members\{{$x->id}}"><button class="btn btn-sm btn-default">Update Info</button></a> <button class="btn btn-sm btn-default">Delete</button>
+                        <td>
+                        <a href="\Cluster\Members\{{$x->id}}"><button class="btn btn-sm btn-default">Update Info</button></a> <button class="btn btn-sm btn-default">Delete</button>
                     </tr>
                 @endforeach
             </tbody>

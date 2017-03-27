@@ -8,6 +8,17 @@ headers: {
 
 })
 
+function showProfile(){
+    $.ajax({
+        url:'/Auth/Info',
+        data:{},
+        dataType:'JSON',
+        type:'GET',
+        success:function(data){
+            console.log(data)
+        }
+    })
+}
 function negateExponent(x) {
     var result = '';
     var xStr = x.toString(10);

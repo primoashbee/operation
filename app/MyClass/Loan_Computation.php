@@ -37,7 +37,9 @@ namespace App\MyClass{
             $this->total_loan = $this->loan + (($this->interest) * $this->loan);
             $this->weekly_amort=round($this->total_loan / $this->weeks); 
         }
-      
+        // MPL for 6 month term 
+        //ir = 0.03
+        //wcr = 0.013688
         public function table(){
             $p_balance = $this->loan;
             $i_balance = $this->interest_value;

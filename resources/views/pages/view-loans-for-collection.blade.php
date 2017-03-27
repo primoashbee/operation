@@ -10,7 +10,7 @@
             <div class="col-lg-12">
               
                 
-                <h1 class="page-header"> List of All Clients</h1>
+                <h1 class="page-header"> List of All Clusters</h1>
                 @if (session('status'))
                     <div class="{{ session('status')['code'] == 1 ? 'alert alert-success' :'alert alert-danger'}}">
                         <h1> {{ session('status')['msg'] }} </h1>
@@ -25,7 +25,6 @@
                         </ul>
                     </div>
                 @endif
-                <h2>Total Clusters: <b>{{$clusters->count()}}</b></h2>
                 <div class="row">
                 <form action="{{url()->current()}}" method="get">
                     
@@ -62,21 +61,33 @@
                 <th>Action</th>
             </thead>
             <tbody>
+                <?php $ctr = 0;?>
                 @foreach($clusters as $x)
-                    <tr>
-                        <td>{{$x->clusterInfo->code}}</td>
-                        <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
-                        <td>{{$x->lastCollection()}}</td>
-                        <td>{{$x->nextCollection()}}</td>
-                        <td><b>{{pesos($x->totalPaid())}}</b></td>
-                        <td><b>{{pesos($x->loan_amount)}}</b></td>
-           
-                        <td><b>{{pesos($x->cbuCollected())}} </b></td>
-                        <td><a href="/Collected/Cbu/{{$x->id}}"><button class="btn btn-sm btn-default"> CBU </button></a><a href="{{url()->current().'/'.$x->id.'/'.$x->nextCollection()}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>
-                    </tr>
+                        @if($x->clusterInfo->branch_id == \Auth::user()->branch_code)
+                            <tr>
+                                <td>{{$x->clusterInfo->code}}</td>
+                                <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
+                                <td>{{$x->lastCollection()}}</td>
+                                <td>{{$x->nextCollection()}}</td>
+                                <td><b>{{pesos($x->totalPaid())}}</b></td>
+                                <td><b>{{pesos($x->loan_amount)}}</b></td>
+                
+                                <td><b>{{pesos($x->cbuCollected())}} </b></td>
+                                @if($x->nextCollection() != "Collection Ended")
+                                
+                                <td><a href="/Collected/Cbu/{{$x->id}}"><button class="btn btn-sm btn-default"> CBU </button></a><a href="{{url()->current().'/'.$x->id.'/'.$x->nextCollection()}}"><button type = "button"     class="btn btn-default btn-sm">Collect</button></a></td>
+                                @else
+                                <td><a href="/Collected/Cbu/{{$x->id}}"><button class="btn btn-sm btn-default"> CBU Collection </button></a></td>
+                                @endif
+                            </tr>
+                        <?php $ctr++;?>
+                        @endif
                 @endforeach
+                    
             </tbody>
         </table>  
+        
+                <h2>Total Clusters: <b>{{$ctr}}</b></h2>
     </div>
    <!-- Modal -->
     

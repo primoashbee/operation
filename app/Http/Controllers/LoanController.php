@@ -10,7 +10,7 @@ class LoanController extends Controller
     public function index(){
 
         $all = new \App\Cluster_Information;
-        $clusters = $all::paginate(15);
+        $clusters = $all::where('branch_id','=',\Auth::user()->id)->paginate(15);
         $products = new \App\Products;
         $product = $products::all();
         return view('pages.apply-loan',['clusters'=>$clusters,'products'=>$product]);

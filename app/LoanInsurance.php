@@ -12,9 +12,6 @@ class LoanInsurance extends Model
         $total = $amt * $this->rate;
         $cblic_fee = round(($amt /1000) * 2.70, 2); //2.70 6 month load rate
         $lmi_fee = round($total - $cblic_fee,2);
-
-        
-        
         return array('total'=>pesos($total),'cblic_fee'=>$cblic_fee,'lmi_fee'=>$lmi_fee);        
     }
 }

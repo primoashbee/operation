@@ -151,6 +151,24 @@ namespace App\MyClass{
              
             \DB::beginTransaction();
             try{
+                    $di = new \App\Disbursement_Information;
+                    $di = $di::find($this->disbursement_id);
+                    if($di->collectionDates()->last()->collection_date==$this->collection{0}->collection_date){
+                       
+                        //Check if collection_date uploaded will match disbursement last collection date
+                        $di->status = "finished";
+                        $di->is_finished = true;
+                        $di->save();
+
+                        
+                        $fi = new \App\Finished_Disbursement;
+                        $fi->disbursement_id = $this->disbursement_id;
+                        $fi->is_fully_paid = false;
+                        $fi->finished = true;
+                        $fi->comments= false;
+                        $fi->save();    
+                    }
+            
                     $this->collection_date = $this->collection{0}->collection_date;
                   
                     $this->computePayments();
@@ -210,6 +228,7 @@ namespace App\MyClass{
                         $cbu = new \App\CBU;    
                         $cbu->insert($this->cbuValues);
                         
+  
                         destroy_session('readFile');
                         \DB::commit();
                         return true;

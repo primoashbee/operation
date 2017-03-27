@@ -9,7 +9,7 @@ class ClusterController extends Controller
 
     public function index(){
         $cluster = new Cluster_Information();
-        $cluster = $cluster::paginate(15);
+        $cluster = $cluster::where('branch_id','=',\Auth::user()->branch_code)->paginate(15);
         $branch = new \App\Branch_Information;
         $branches = $branch::all();
         $branch = $branch::paginate(15);
@@ -25,6 +25,10 @@ class ClusterController extends Controller
         return view('pages.add-cluster',['branches'=>$branches]);
     }
     public function postCreateCluster(Request $request){
+        if($request->code != generateClusterCode()){
+            $array = array('Code Error');
+            return back()->withErrors($array);
+        }
         $cluster = new Cluster_Information();
         $cluster = new \App\Cluster_Information;
         $rules = [
@@ -92,8 +96,9 @@ class ClusterController extends Controller
             ->withErrors($validator)
             ->withInput();
         }
-       
-        if($cluster->update($request->all())){
+        $input = $request->except('branch','branch_id','code');
+        
+        if($cluster->update($input)){
             return redirect('/Cluster/Update/'.$id)->with('status','Cluster Updated');
         }
 
@@ -108,21 +113,37 @@ class ClusterController extends Controller
         
       //  dd($members->listToAdd($id)->all());
         
-        $cluster_members = $members::where('cluster_id','=',$id)->paginate(15);
+        $cluster_members = $members::where('cluster_id','=',$id)->paginate(1000);
         
         $clients = new \App\Client_Information;
-        //$clients = $members->listToadd($id)->all();
+        //$clients = $clients->where('branch_id','=',\Auth::user()->branch_code);
+       //dd(\Auth::user());
         $clients =$clients->hasNoCluster();
-        
         return view('pages.view-cluster-members',['clients_to_add'=>$clients,'members'=>$cluster_members,'cluster_info'=>$cluster_information,'id'=>$id]);
         
     }
     public function preAddToCluster(){
         $client = new \App\Client_Information;
-        $clients = $client::all();
+        $clients = $client::where('branch_id','=',\Auth::user()->branch_code)->get();
+      
         return response()->json($clients);        
     }
     public function postAddToCluster(Request $request,$id){
+
+        $x = new \App\Cluster_Information;
+        if(!$x->find($id)->isAvailable()){
+            $status = array('code'=>0,'MSG'=>'Cluster is in active program. Cannot Add Members');
+            return back()->with('status',$status);
+        }
+        if($x->find($id)->sumAfterAddingMember(count($request->client_id)) > 20 ){
+            $current = $x->find($id)->sumAfterAddingMember(count($request->client_id)) - count($request->client_id);
+            $toAdd = count($request->client_id); 
+            $remaining = 20 - $current;
+            $total = $current + $toAdd;
+              $errors = array('Cannot Add More Members','Cannot Exceed More than 20','Current Members :'.$current,'Remainig Slot: '.$remaining,'For Adding: '.$toAdd,'Total if Added: '.$total);
+            return back()->withErrors($errors);
+        }
+
         $cluster = new \App\Cluster_Members;
         $data = array();
         $rules = [
@@ -171,7 +192,11 @@ class ClusterController extends Controller
         
     }
     public function removeToCluster($cluster_id,$client_id){
-        
+        $x = new \App\Cluster_Information;
+        if(!$x->find($cluster_id)->isAvailable()){
+            $status = array('code'=>0,'MSG'=>'Cluster is in active program. Cannot remove cluster member/s');
+            return back()->with('status',$status);
+        }
         $clusters = new \App\Cluster_Members;
         $delete_id = $clusters->where('cluster_id','=',$cluster_id)->where('client_id','=',$client_id)->get();
         $delete_id = $delete_id->first()->id;

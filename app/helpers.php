@@ -1,4 +1,47 @@
-<?php 
+<?php
+function generateClientCode(){
+    $branch = new \App\Branch_Information;
+    $branch = $branch::find(\Auth::user()->branch_code);
+    $operation = substr($branch->operation,0,1);
+    $branch = substr($branch->name,0,3);
+    
+    $client = new \App\Client_Information;
+    $client = $client::orderBy('id','desc')->where('branch_id','=',\Auth::user()->branch_code)->get();
+    $increment = 1000;
+    if($client->count() > 0){
+        $increment = $increment + $client->count() + 1;
+    }
+    $code = $operation.'-'.$branch.'-P'.$increment;
+    
+    return $code;
+}
+function generateClusterCode(){
+    $branch = new \App\Branch_Information;
+    $branch = $branch::find(\Auth::user()->branch_code);
+    $operation = substr($branch->operation,0,1);
+    $branch = substr($branch->name,0,3);
+
+    $cluster = new \App\Cluster_Information;
+    $cluster = $cluster::where('branch_id','=',\Auth::user()->branch_code)->orderBy('id','desc')->get();
+    //dd(\Auth::user());
+    $increment = 1000;
+    if($cluster->count() > 0){
+        $increment = $increment + $cluster->first()->id;
+    }
+    $code = $operation.'-'.$branch.'-C'.$increment;
+    return $code;
+}
+function getAge($birthday){
+
+return \Carbon\Carbon::parse($birthday)->age;
+}
+function getBranchById($id){
+    $branch = new \App\Branch_Information;
+    return $branch::find($id);
+}
+function whoIsLoggedIn(){
+    return \Auth::user();
+}
 function pera_format($string){
     return "₱ ".number_format($string); 
 }

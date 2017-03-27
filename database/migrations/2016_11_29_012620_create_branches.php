@@ -17,7 +17,9 @@ class CreateBranches extends Migration
         Schema::create('branches', function (Blueprint $table) {
             $table->increments('id');
             $table->string('operation')->nullable();
-            $table->string('name')->nullable();
+            $table->string('area')->nullable();
+            $table->string('name')->nullable()->unique();
+            $table->string('branch_code')->nullable()->unique();
             $table->softDeletes();
             $table->timestamps();
             //

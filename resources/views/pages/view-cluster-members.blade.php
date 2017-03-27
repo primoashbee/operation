@@ -38,18 +38,23 @@
     <div class="" >
         <div id="current_members">
                 <button class="btn btn-default" id="btn_add_members"> Add Members </button>
-                <table class="table table-striped">
+                <table class="table table-striped listing" id = "tblMain">
                 <thead>
                 <th>Name</th>
                 <th>Address</th>
                 <th>Action</th>
                 </thead>
-                <tbody>
+                <tbody >
                     @foreach($members->all() as $x)
                         <tr>
+                        <td>
+                        @if($x->name->sex=="Male")
+                        <div><img class="photo-icon img_src img-circle"  alt="{{$x->name->firstname.' '.$x->name->lastname}}" src="{{$x->name->img_src==null ? '/photo/clients/2x2-filler m.jpg' : $x->name->img_src}}"> {{$x->name->firstname.' '.$x->name->lastname }}</div></td>
+                        @else
+                        <div><img class="photo-icon img_src img-circle"  alt="{{$x->name->firstname.' '.$x->name->lastname}}" src="{{$x->name->img_src==null ? '/photo/clients/2x2-filler f.jpg' : $x->name->img_src}}"> {{$x->name->firstname.' '.$x->name->lastname }}</div></td>
                        
-                        <td>{{$x->name->firstname.' '.$x->name->lastname }}</td>
-                        
+                        @endif
+
                         <td>{{$x->name->home_address}}</td>
                         <td><a href="/Clients/Update/{{$x->name->id}}"><button class="btn btn-sm btn-success">Update Client Information </button></a> 
                         <a href="/Cluster/{{$id}}/Members/Remove/{{$x->name->id}}"><button class="btn btn-sm btn-danger">Remove </button></a> </td>
@@ -65,27 +70,30 @@
                 <input type="hidden" name = "cluster_id" value="{{$id}}">
 
                 <button class="btn btn-default" id="btn_back"> Back </button>
-                <table class="table table-striped" id="myTable">
+                <table class="table table-striped listing" id="tblToAdd">
                 <thead>
                 <th></th>
+                <th>Client Code</th>
                 <th>Name</th>
                 <th>Address</th>
-                <th>Action</th>
+              
                 </thead>
                 <tbody>
                
                     @foreach($clients_to_add as $x)
                         <tr>
-                        <td><input type="checkbox" name="client_id[]" value="{{$x->id}}"></td>
-                        <td>{{$x->firstname.' '.$x->lastname}}</td>
+
+                        <td><input class="cToAdd" type="checkbox" name="client_id[]" value="{{$x->id}}"></td>
+                        <td>{{$x->client_code}}</td>
+                        <td><div><img class="photo-icon img_src img-circle" alt="{{$x->firstname.' '.$x->lastname}}" src="{{$x->img_src==null ? '/photo/clients/2x2-filler.jpg' : $x->img_src}}">  {{$x->firstname.' '.$x->lastname}}</div></td>
                         
                         <td>{{$x->home_address}}</td>
-                        <td><a href="/Cluster/{{$id}}/Members/Add/{{$x->id}}"><button class="btn btn-sm btn-default">Update Cluster</button></a> <a href="/Cluster/{{$x->id}}/Members"><button class="btn btn-sm btn-default">Loans</button></a></td>
+                        
                         </tr>
                     @endforeach
                 </tbody>
                 </table>
-                <input type="submit">
+                <input type="submit" class="btn btn-default">
             </form>
         </div>
 
@@ -94,19 +102,36 @@
    
     {{$members->links()}}
 
+
+ 
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">              
+      <div class="modal-body" >
+      	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        
+        <img src="" class="imagepreview thumbnail" style="width: 100%;" >
+        <center><b><h4 id="preview-name"></h4></b></center>
+      </div>
+    </div>
+  </div>
+</div>  
 @stop
 @section('page-script')
 <script>
- var oTable
+ var table
 $(function(){
-    $('#myTable').DataTable();
-    oTable = $('#data_table').dataTable();
-    $('#list_to_add').hide();
-    $('tr').click(function(event) {
-        if (event.target.type !== 'checkbox') {
-        $(':checkbox', this).trigger('click');
-        }
-    });
+   table= $('table.listing').DataTable();
+   
+
+})
+
+$('.img_src').click(function(){
+    var src = $(this).attr('src')
+    var name = $(this).attr('alt')
+    $('.imagepreview').attr('src', src);
+    $('#preview-name').html(name);
+    $('#imagemodal').modal('show');   
 })
 $("#btn_add_members").click(function(){
     
@@ -122,16 +147,37 @@ $("#btn_back").click(function(e){
 
 })
 
-$('#frmAddToCluster').submit(function () {
-            $("input[name='question']").remove();  //Remove the old values
-            $("input:checked", oTable.fnGetNodes()).each(function(){
-                $('<input type="checkbox" name="questions" ' + 'value="' +
-                  $(this).val() + '" type="hidden" checked="checked" />')
-                    .css("display", "none")
-                    .appendTo('#form');
-            });
+$('#frmAddToCluster').submit(function (e) {
+        var $form = $(this);
+            // Iterate over all checkboxes in the table
+            table.$('input[type="checkbox"]').each(function(){
+                // If checkbox doesn't exist in DOM
+                if(!$.contains(document, this)){
+                    // If checkbox is checked
+                    if(this.checked){
+                        // Create a hidden element 
+                        $form.append(
+                        $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', this.name)
+                            .val(this.value)
+                        );
+                    }
+                } 
+            });          
 });
 
 
+
+$('.img_src').click(function(){
+var src = $(this).attr('src')
+var name = $(this).attr('alt')
+			$('.imagepreview').attr('src', src);
+			$('#preview-name').html(name);
+			$('#preview').css('overflow-y', 'auto'); 
+            $('#preview').css('max-height', $(window).height() * 2);
+            $('#large_image').css('max-height: calc(100vh - 225px);');
+
+})
 </script>
 @stop

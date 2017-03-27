@@ -35,7 +35,7 @@
                 <div class="form-group">
                 <label for="branch">Branch</label>
                
-                <input type="text" class="form-control" id="branch" name ="branch" value=" {{ $branch_name }}"  placeholder="Branch Name" required>
+                <input type="text" class="form-control" id="branch" name ="branch" value=" {{ $branch_name }}"  placeholder="Branch Name" required readonly>
                 <input type="hidden"  id="branch_id" name ="branch_id" value =" {{ $branch_info->branch_id}}" required>
                 </div>
             </div>
@@ -43,7 +43,7 @@
             <div class="col-md-4 col-lg-4">
                 <div class="form-group">
                 <label for="code">Code</label>
-                <input type="text" class="form-control" id="code" name ="code" value ="{{$branch_info->code}}" placeholder="Cluster code" required>
+                <input type="text" class="form-control" id="code" name ="code" value ="{{$branch_info->code}}" placeholder="Cluster code" readonly required>
                 </div>
             </div>
             

@@ -16,9 +16,10 @@ class Payment_Information extends Model
     }
     public function amortizationInfo(){
         $amort = new \App\Amortization;
-        
+        if($amort::find($this->amort_id) ==null){
+        return null;    
+        }
         return $amort::find($this->amort_id);
-        
         //return $this->belongsTo('App\Amortization','amort_id','amort_id');
     }
     public function lastWeekDue(){ 

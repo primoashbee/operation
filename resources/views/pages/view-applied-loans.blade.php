@@ -25,7 +25,6 @@
                         </ul>
                     </div>
                 @endif
-                <h2>Total Clusters: <b>{{$clusters->total()}}</b></h2>
                 <div class="row">
                 <form action="{{url()->current()}}" method="get">
                     
@@ -54,25 +53,38 @@
                 <th>Members</th>
                 <th>Paid</th>
                 <th>Loan Amount</th>
-               
+                
                 <th>Loan Officer</th>
                 
-                <th>Action</th>
+                <th style="text-align:center">Action</th>
             </thead>
             <tbody>
-           
+           <?php $ctr=0; ?>
                 @foreach($clusters as $x)
+                    @if($x->isInBranch())        
+                    <?php $ctr++; ?>
+                    
                     <tr>
                         <td>{{$x->clusterInfo->code}}</td>
                         <td>{{$x->clusterInfo->totalMembers($x->cluster_id)}}</td>
                         <td><b>{{pesos($x->totalPaid())}}</b></td>
                         <td><b>{{pesos($x->loan_amount)}}</b></td>
                         <td>{{$x->clusterInfo->pa_lastname.', '.$x->clusterInfo->pa_firstname}}</td>
-                        <td><a href="{{url()->current().'/'.$x->id.'/Schedule?collection_date='.$x->nextCollection()}}"><button type = "button"     class="btn btn-default btn-sm">Check Composition</button></a></td>
+                        <td style="text-align:center">
+                        <a href="{{url()->current().'/'.$x->id.'/Schedule?collection_date='.$x->nextCollection()}}"><button type = "button"     class="btn btn-default btn-sm">Check Composition</button></a>
+                        <a href="{{url()->current().'/'.$x->id.'/Insurance'}}"><button type = "button"     class="btn btn-default btn-sm">Insurance Information</button></a>
+                        
+                        </td>
                     </tr>
+                    @else
+                      
+                    @endif
+                
                 @endforeach
             </tbody>
         </table>  
+    
+        <h2>Total Clusters: <b>{{$ctr}}</b></h2>
         {{$clusters->links()}}
     </div>
    <!-- Modal -->

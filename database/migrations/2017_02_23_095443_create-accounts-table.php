@@ -19,6 +19,7 @@ class CreateAccountsTable extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->string('branch_code');
+            $table->string('account_type');
             $table->string('is_admin');
             $table->rememberToken();
             $table->timestamps();

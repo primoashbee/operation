@@ -18,7 +18,15 @@
             
             <!-- /.col-lg-12 -->
         </div>
-     
+        @if (count($errors) > 0)
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         @if(session('status'))
 
             <div class="alert alert-{{ (session('status')['code']==1)?'success' : 'danger' }}">
@@ -37,28 +45,35 @@
                 <input type="text" class="form-control" name="check_number" id="check_number" required>
             </div>
         </div>
+         <div class="col-lg-6 col-md-6">
+            <div class="form-group">
+                <label for="release_date"> Release Date </label>
+                <input type="date" class="form-control" name="release_date" id="release_date" required>
+            </div>
+        </div>
+       
         <div class="col-lg-6 col-md-6">
+            <div class="form-group">
+                <label for="weeks_to_pay"> Weeks To Pay  </label>
+                <input type="number" class="form-control" name="weeks_to_pay" id="weeks_to_pay" min="22" max="26" required>
+            </div>
+        </div>
+         <div class="col-lg-4 col-md-4">
             <div class="form-group">
                 <label for="first_collection_date"> First Payment  </label>
                 <input type="date" class="form-control" name="first_collection_date" id="first_collection_date" required>
             </div>
         </div>
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-4 col-md-4">
             <div class="form-group">
                 <label for="last_collection_date"> Last Payment </label>
                 <input type="date" class="form-control" name="last_collection_date" id="last_collection_date" required>
             </div>
         </div>
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-4 col-md-4">
             <div class="form-group">
                 <label for="maturity_date"> Maturity Date </label>
                 <input type="date" class="form-control" name="maturity_date" id="maturity_date" required>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="form-group">
-                <label for="release_date"> Release Date </label>
-                <input type="date" class="form-control" name="release_date" id="release_date" required>
             </div>
         </div>
         <div class="col-lg-12 col-md-12">
@@ -95,7 +110,7 @@
                                         </td>
                                         <td>
                                             <div class="input-group">
-                                                <input type="number" min="2000" max="99000" name="loan_amount[{{$x->name->id}}]" class="form-control loan-amount" data-id="{{$x->name->id}}" required>
+                                                <input type="number" min="2000" max="99000" step="1000" name="loan_amount[{{$x->name->id}}]" class="form-control loan-amount" data-id="{{$x->name->id}}" required>
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-success view-amort" lookup-id="{{$x->name->id}}" type="button">View Amortization</button>
                                                 </span>
@@ -129,11 +144,10 @@
                         <table class="table table-striped">
                             <thead>
                                 <th style="width:30%">Name</th>
-                                <th style="width:30px">MI (CBLIC)</th>
-                                <th style="width:30px">MI (LMI FEE)</th>
+                                <th style="width:30%"> Dependents </th> 
+
                                 <th style="width:30px">MI Total</th>
-                                <th style="width:30px">CLI (CBLIC)</th>
-                                <th style="width:30px">CLI (LMI FEE)</th>
+
                                 <th style="width:45px">CLI Total</th>
                             </thead>
                             <tbody>
@@ -143,19 +157,17 @@
                                             {{$x->name->lastname.', '.$x->name->firstname.', '.$x->name->middlename}}
                                         </td>
                                         <td>
-                                            <input type="number"  name="mi_premium_cblic[{{$x->name->id}}]" class="form-control loan-amount" id="mi_premium_cblic_{{$x->name->id}}" required >
+                                            <select  name="mi[{{$x->name->id}}]" class="form-control mi_info" required id="slct_{{$x->id}}" bind-id="{{$x->name->id}}">
+                                                <option value=""> ------- </option>
+                                                @foreach($insurance as $value)
+                                                    <option id="{{$value->id}}" total="{{$value->total_mi_fee}}" value="{{$value->id}}">{{$value->description}}</option>
+                                                @endforeach        
+                                            </select>
                                         </td>
-                                        <td>
-                                            <input type="number"  name="mi_premium_lmi[{{$x->name->id}}]" class="form-control loan-amount" id="mi_premium_lmi_{{$x->name->id}}" required readonly value="90">
-                                        </td>
-                                        <td> <span id="total_mi_{{$x->id}}"></span> ₱ 90.00 </td>
-                                        <td>
-                                            <input type="number"  name="cli_premium_cblic[{{$x->name->id}}]" class="form-control loan-amount" id="cli_premium_cblic_{{$x->name->id}}" required readonly>
-                                        </td>
-                                        <td>
-                                            <input type="number"  name="cli_premium_lmi[{{$x->name->id}}]" class="form-control loan-amount" id="cli_premium_lmi_{{$x->name->id}}"required readonly >
-                                        </td>
-                                        <td> <span id="total_cli_{{$x->name->id}}">₱ 0.00</span> </td>
+                                      
+                                        <td><b> <span id="total_mi_{{$x->name->id}}">₱ 0.00</span></b></td>
+                                       
+                                        <td><b><span id="total_cli_{{$x->name->id}}">₱ 0.00</span></b> </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -297,7 +309,7 @@ my_window = window.open('/Api/Scheduling/'+value,
   "Schedule","status=1,width=1000px,height=500px");
 
 }
- $("#first_collection_date").change(function(){
+ $("#release_date").change(function(){
      var input = $(this)
      var val = input.val()
      $.ajax({
@@ -307,15 +319,29 @@ my_window = window.open('/Api/Scheduling/'+value,
          type:'GET',
          success:function(data){
              if(data.code==1){
-                 $('#last_collection_date').val(data.msg)
+                // $('#maturity_date').val(data.maturity_date)
+                 $('#first_collection_date').val(data.res.first_payment)
+                 $('#maturity_date').val(data.res.end_date)
+                 //$('#weeks_to_pay').val(data.res.weeks_diff)
+                 $('#weeks_to_pay').val(24)
+                 $('#last_collection_date').val(data.res.last_payment)
+                 console.log(data.res.end_date)
                    input.removeClass('alert-danger')
                 
              }else{
-
-                 input.addClass('alert-danger')
+                alert('Selected Date must be M-F');
+                $("#release_date").val("")
+                input.addClass('alert-danger')
              }
          }
      })
+ })
+
+ $('.mi_info').change(function(){
+    id = $(this).attr('bind-id')
+    target = '#total_mi_'+id
+    total = $(this).find('option:selected').attr('total')
+    $(target).html(' ₱ '+ total +'.00')
  })
 </script>  
 @stop

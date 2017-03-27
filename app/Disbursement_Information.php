@@ -48,6 +48,9 @@ class Disbursement_Information extends Model
         $amort = new \App\Amortization;
         
         $amort = $amort::distinct()->where('disbursement_id','=',$disbursement_id)->whereNotNull('collection_date')->orderBy('collection_date','asc')->get(['collection_date']);
+        if($amort==null){
+            return false;
+        }
         return $amort;
     }
     public function getCollectionThisDay(){
@@ -82,7 +85,9 @@ class Disbursement_Information extends Model
         }
     }
     public function nextCollection(){
-
+        if($this->cycleEnd()){
+                return 'Collection Ended';
+         }
 
         if($this->lastCollection()=="None"){
             
@@ -118,5 +123,33 @@ class Disbursement_Information extends Model
         $cbu = $cbu->sum('amount');
         return $cbu;
     }
- 
+    
+    public function cycleEnd(){
+        $fd = new \App\Finished_Disbursement;
+        if($fd::where('disbursement_id','=',$this->id)->count() > 0 ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public function isInBranch(){
+        
+        if($this->clusterInfo->branch_id == \Auth::user()->branch_code){
+            return true;
+        }
+        return false;
+    }
+    public function lastCollectionDate(){
+        return $this->collectionDates()->last();
+    }
+    public function hasStartedCollecting(){
+        $ps = new \App\Payment_Summary;
+        if($ps::where('disbursement_id','=',$this->id)->count() > 0 ){
+            return true;
+        }   
+        return false;
+    }
+    public function branchCode(){
+        return $this->clusterInfo->branch_id;
+    }
 }

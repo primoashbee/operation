@@ -21,8 +21,11 @@
       </ul>
       
       <div class="tab-content">
+        <img src="{{asset('/img/light.png')}}"/>
           <div id="login">   
-          <h1 style="margin-bottom:-5px">LIGHT MFI </h1>
+        
+        
+            <h1 style="margin-bottom:-5px">LIGHT MFI </h1>
           <hr>
           <h1>LR & CBU Monitoring</h1>
             @if(\Session::has('msg'))
