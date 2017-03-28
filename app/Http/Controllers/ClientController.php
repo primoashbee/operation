@@ -219,7 +219,7 @@ class ClientController extends Controller
         $client = new Client_Information();
         $client = $client->where('lastname','=',$request->lastname)->where('firstname','=',$request->firstname)->where('birthday','=',$request->birthday);
         if($client->count() > 0){
-            $msg = 'Client Already Existing at '.$client->first()->branch()->name;
+            $msg = 'Client Already Existing at '.$client->first()->branch()->name.' branch';
             return response()->json(['code'=>404,'msg'=>$msg]);
         }else{
         
