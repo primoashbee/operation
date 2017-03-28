@@ -161,6 +161,7 @@ Route::group(['middleware' => 'auth'], function() {
 
 
     //Api
+    Route::post('/Api/CheckClient', 'ClientController@checkClient');
     Route::get('/Api/Loans/Analysis', 'LoanController@getAnalysisById');
     Route::get('/Api/Amortization', 'LoanController@getAnalysisById');
     Route::get('/Api/Loans/Information/{id}', 'LoanController@getLoanById');

@@ -215,4 +215,16 @@ class ClientController extends Controller
         $limits=new \App\Credit_Limit;
 
     }
+    public function checkClient(Request $request){
+        $client = new Client_Information();
+        $client = $client->where('lastname','=',$request->lastname)->where('firstname','=',$request->firstname)->where('birthday','=',$request->birthday);
+        if($client->count() > 0){
+            $msg = 'Client Already Existing at '.$client->first()->branch()->name;
+            return response()->json(['code'=>404,'msg'=>$msg]);
+        }else{
+        
+            return response()->json(['code'=>200,'msg'=>'New Client']);
+            
+        }
+    }
 }

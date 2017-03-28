@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 class DownloadController extends Controller
 {
     public function downloadCCRThisDay($d_id,$date){
+        
+        $hashed_date = \Hash::make(\Carbon\Carbon::now()->toDateString());
+        $unhashed_date = \Carbon\Carbon::now()->toDateString();
+       
         $ps = new \App\Payment_Summary;
         $payment = new \App\Payment_Summary;
         $payment = $payment::where('disbursement_id','=',$d_id);
@@ -120,6 +124,7 @@ class DownloadController extends Controller
                 });
                 $excel->setCreator(env('Author'))->setCompany('LIGHT Microfinance Inc.');
                 $excel->setSubject('CCR Collection');
+                $excel->setKeywords();
                 
                 
             })->download('xlsx');

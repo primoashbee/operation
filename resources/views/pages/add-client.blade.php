@@ -23,13 +23,16 @@
                 </ul>
             </div>
         @endif
-            @if (session('status'))
-                <div class="alert alert-success">
-                   <h1> {{ session('status') }} </h1>
-                </div>
-            @endif
+        @if (session('status'))
+            <div class="alert alert-success">
+                <h1> {{ session('status') }} </h1>
+            </div>
+        @endif
        
-            {{ csrf_field() }}
+        <div class="alert alert-danger" id="ajaxAlert" style="display:none;">
+            <strong>Alert!</strong> <span id="ajaxMsg"></span>
+        </div>
+                    {{ csrf_field() }}
             <div class="row">
             
              <div class="col-md-12 col-lg-12">
@@ -43,7 +46,7 @@
                     <div class="form-group">
                     <label for="lastname">Last Name</label>
                       
-                    <input type="text" class="form-control" id="lastname" name ="lastname" value ="{{ old('lastname')}}" >
+                    <input type="text" class="form-control unique" id="lastname" name ="lastname" value ="{{ old('lastname')}}" >
                     </div>
                 </div>
                 
@@ -51,9 +54,10 @@
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="firstname">Firstname Name</label>
-                    <input type="text" class="form-control" id="firstname" name ="firstname" value ="{{ old('firstname')}}" >
+                    <input type="text" class="form-control unique" id="firstname" name ="firstname" value ="{{ old('firstname')}}" >
                     </div>
                 </div>
+                
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">                
                     <label for="middlename">Middle Name</label>
@@ -62,6 +66,12 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-md-4 col-lg-4">
+                    <div class="form-group">
+                    <label for="birthday">Birthday </label>
+                    <input type="date" class="form-control unique" id="birthday" name ="birthday" value ="{{ old('birthday')}}">
+                    </div>
+                </div>
                 <div class="col-md-4 col-lg-4">
                     <div class="form-group">
                     <label for="suffix">SUFFIX (ex. <i>JR, I, II, III</i>)</label>
@@ -75,12 +85,7 @@
                     <input type="text" class="form-control" id="nickname" name ="nickname"  value ="{{ old('nickname')}}" >
                     </div>
                 </div>
-                <div class="col-md-4 col-lg-4">
-                    <div class="form-group">
-                    <label for="mother_name">Mother Maiden Name</label>
-                    <input type="text" class="form-control" id="mother_name" name ="mother_name" value ="{{ old('mother_name')}}">
-                    </div>
-                </div>
+                
             </div>
             <div class="row">
                 <div class="col-md-4 col-lg-4">
@@ -95,10 +100,10 @@
                     <input type="text" class="form-control" id="TIN" name ="TIN" value ="{{ old('TIN')}}">
                     </div>
                 </div>
-                <div class="col-md-4 col-lg-4">
+               <div class="col-md-4 col-lg-4">
                     <div class="form-group">
-                    <label for="birthday">Birthday </label>
-                    <input type="date" class="form-control" id="birthday" name ="birthday" value ="{{ old('birthday')}}">
+                    <label for="mother_name">Mother Maiden Name</label>
+                    <input type="text" class="form-control" id="mother_name" name ="mother_name" value ="{{ old('mother_name')}}">
                     </div>
                 </div>
 
@@ -329,23 +334,42 @@
                 </div>
             </div>
         
-        
+            
     </div>
    
 </form> 
 @stop
 @section('page-script')
 <script>
-var curr = 0
+var ctr = 0
 $(function(){
-  /* 
-    $.each($('*[]'),function(k,v){
-          $(this).css('border-color','#337ab7')
-          $(this).removeAttr('')
-        
+    $('.unique').change(function(){
+        ctr = 0 
+        $.each($('.unique'),function(){
+            if($(this).val()!=""){
+                ctr = ctr + 1
+            }
+        })
+        if(ctr==3){
+            $.ajax({
+                url:'/Api/CheckClient',
+                type:'POST',
+                data:{lastname:$('#lastname').val(),firstname:$('#firstname').val(),birthday:$('#birthday').val()},
+                dataType:'JSON',
+                success:function(data){
+                    if(data.code == 200){
+                        $('#ajaxAlert').hide()
+                    }else{
+                        $('#ajaxAlert').show()
+                    }
+                    $('#ajaxMsg').html(data.msg)
+                }
+
+
+                
+            })
+        }
     })
-    */
-    
 })
 </script>
 @stop
